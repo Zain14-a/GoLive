@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoLive - شات</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📹</text></svg>">
+</head>
+<body class="chat-body">
+    <div class="chat-wrap">
+        <div class="chat-topbar">
+            <a href="/" class="back-link">&rarr;</a>
+            <div class="topbar-title">Go<span>Live</span></div>
+            <div class="topbar-status">
+                <span class="pulse-dot" id="statusDot"></span>
+                <span id="statusLabel">جاري الاتصال...</span>
+            </div>
+            <div class="topbar-points" id="topbarPoints" title="نقاطك">
+                <span class="points-icon">&#9733;</span>
+                <span id="pointsDisplay">0</span>
+            </div>
+            <div class="yeame-badge" id="yeameBadge" title="Yeame - نظام الحماية">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span>Yeame</span>
+                <span class="yeame-status" id="yeameStatus"></span>
+            </div>
+            <button id="statsBtn" class="topbar-icon" title="إحصائياتي">&#128200;</button>
+            <button id="reportBtn" class="topbar-report" title="إبلاغ">&#9888;</button>
+        </div>
+
+        <div class="chat-main">
+            <div class="video-area">
+                <div class="video-block remote-block" id="remoteBlock">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-idle" id="remoteIdle">
+                        <div class="search-spinner"></div>
+                        <p id="idleText">جاري البحث عن شخص...</p>
+                    </div>
+                    <span class="video-flag" id="remoteFlag"></span>
+                    <div class="caption-bar" id="captionBar"></div>
+                </div>
+                <div class="video-block local-block">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                    <canvas id="filterCanvas" class="filter-canvas"></canvas>
+                    <span class="video-tag">أنت</span>
+                </div>
+            </div>
+
+            <div class="filters-bar" id="filtersBar">
+                <button class="filter-chip active" data-filter="none">&#10005; بدون</button>
+                <button class="filter-chip" data-filter="cool">&#128526; نظارات</button>
+                <button class="filter-chip" data-filter="heart">&#128150; قلوب</button>
+                <button class="filter-chip" data-filter="star">&#11088; نجوم</button>
+                <button class="filter-chip" data-filter="fire">&#128293; نار</button>
+                <button class="filter-chip" data-filter="crown">&#128081; تاج</button>
+                <button class="filter-chip" data-filter="rainbow">&#127752; قوس قزح</button>
+                <button class="filter-chip" data-filter="snow">&#10052; ثلج</button>
+                <button class="filter-chip" data-filter="party">&#127881; حفلة</button>
+            </div>
+
+            <div class="chat-bottom">
+                <div class="msg-box" id="msgBox">
+                    <div class="msg-welcome">مرحبا بك في GoLive. ابدأ بالمحادثة!</div>
+                </div>
+                <div class="msg-input-row">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالة..." maxlength="300">
+                    <button id="sendBtn" class="send-icon">&#10148;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-toolbar">
+            <button id="skipBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                <span>التالي</span>
+            </button>
+            <button id="stopBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1"></rect></svg>
+                <span>إيقاف</span>
+            </button>
+            <button id="muteBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                <span>كتم</span>
+            </button>
+            <button id="camBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                <span>الكاميرا</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal-bg" id="statsModal">
+        <div class="modal-box">
+            <h3>&#128200; إحصائياتي</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val" id="statChats">0</div>
+                    <div class="stat-lbl">محادثة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statMinutes">0</div>
+                    <div class="stat-lbl">دقيقة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statCountries">0</div>
+                    <div class="stat-lbl">بلد</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statPoints">0</div>
+                    <div class="stat-lbl">نقطة</div>
+                </div>
+            </div>
+            <div class="stat-level">
+                <span class="level-label">المستوى</span>
+                <span class="level-val" id="statLevel">1 - مبتدئ</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <h4 style="margin-top:16px;margin-bottom:8px;font-size:0.9rem;color:var(--text2)">البلود اللي زرتها</h4>
+            <div class="country-tags" id="countryTags"></div>
+            <div class="modal-btns">
+                <button id="closeStats" class="mbtn cancel">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal-bg" id="leaderModal">
+        <div class="modal-box">
+            <h3>&#127942; لوحة المتصدرين</h3>
+            <div class="leader-list" id="leaderList"></div>
+            <div class="modal-btns">
+                <button id="closeLeader" class="mbtn cancel">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-bg" id="reportModal">
+        <div class="modal-box">
+            <h3>إبلاغ عن مستخدم</h3>
+            <div class="report-list">
+                <label><input type="radio" name="rpt" value="nude"> محتوى غير لائق</label>
+                <label><input type="radio" name="rpt" value="spam"> سبام</label>
+                <label><input type="radio" name="rpt" value="kid"> مستخدم أقل من 18</label>
+                <label><input type="radio" name="rpt" value="abuse"> مضايقة</label>
+            </div>
+            <div class="modal-btns">
+                <button id="cancelReport" class="mbtn cancel">إلغاء</button>
+                <button id="submitReport" class="mbtn submit">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Warning -->
+    <div class="content-warning" id="contentWarning">
+        <div class="warning-box">
+            <span>&#128680;</span>
+            <p>تم اكتشاف محتوى مخالف. تم قطع المحادثة تلقائياً.</p>
+            <button id="warningOk" class="mbtn submit">فهمت</button>
+        </div>
+    </div>
+
+    <!-- Yeame Alert -->
+    <div class="yeame-alert" id="yeameAlert">
+        <div class="yeame-alert-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <div>
+                <strong id="yeameAlertTitle">Yeame</strong>
+                <p id="yeameAlertText">تم اكتشاف محتوى مخالف</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/yeame.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>

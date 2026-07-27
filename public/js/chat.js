@@ -22,6 +22,8 @@ const submitReport = document.getElementById('submitReport');
 const statsBtn = document.getElementById('statsBtn');
 const statsModal = document.getElementById('statsModal');
 const closeStats = document.getElementById('closeStats');
+const leaderModal = document.getElementById('leaderModal');
+const closeLeader = document.getElementById('closeLeader');
 const pointsDisplay = document.getElementById('pointsDisplay');
 const captionBar = document.getElementById('captionBar');
 const contentWarning = document.getElementById('contentWarning');
@@ -42,6 +44,7 @@ let currentRoomId = null;
 let currentFilter = 'none';
 let filterAnimFrame = null;
 let activeParticles = [];
+let partnerCountry = null;
 
 const COUNTRY_FLAGS = {
     JO: '\u{1F1EF}\u{1F1F4}', SA: '\u{1F1F8}\u{1F1E6}', AE: '\u{1F1E6}\u{1F1EA}',
@@ -391,9 +394,7 @@ let chatStartTime = null;
 
 function handleSkip() {
     if (chatStartTime && currentRoomId) {
-        const s = getStats();
-        s.minutes += Math.round((Date.now() - chatStartTime) / 60000);
-        saveStats(s);
+        recordChatEnd(partnerCountry);
     }
     socket.emit('skip');
     closePeerConnection();
@@ -401,14 +402,13 @@ function handleSkip() {
     setStatus('جاري البحث...', 'red');
     isSearching = true;
     chatStartTime = null;
+    partnerCountry = null;
     captionBar.style.display = 'none';
 }
 
 function handleStop() {
     if (chatStartTime && currentRoomId) {
-        const s = getStats();
-        s.minutes += Math.round((Date.now() - chatStartTime) / 60000);
-        saveStats(s);
+        recordChatEnd(partnerCountry);
     }
     socket.emit('stopChat');
     closePeerConnection();
@@ -417,6 +417,7 @@ function handleStop() {
     isSearching = false;
     currentRoomId = null;
     chatStartTime = null;
+    partnerCountry = null;
     captionBar.style.display = 'none';
 }
 
@@ -434,6 +435,7 @@ socket.on('matchFound', async (data) => {
     isSearching = false;
     clearInterval(searchInterval);
     chatStartTime = Date.now();
+    partnerCountry = data.partnerCountry || null;
     if (data.partnerCountry && COUNTRY_FLAGS[data.partnerCountry]) {
         remoteFlag.textContent = COUNTRY_FLAGS[data.partnerCountry];
     } else {
@@ -474,10 +476,14 @@ socket.on('newMessage', (data) => {
 });
 
 socket.on('partnerDisconnected', () => {
+    if (chatStartTime && currentRoomId) {
+        recordChatEnd(partnerCountry);
+    }
     closePeerConnection();
     isSearching = false;
     currentRoomId = null;
     chatStartTime = null;
+    partnerCountry = null;
     showIdle('غادر الشخص. اضغط "التالي" للبحث عن شخص جديد');
     setStatus('انقطع الاتصال', 'red');
     addMsg('غادر الشخص المحادثة.', 'sys');
@@ -544,6 +550,7 @@ submitReport.addEventListener('click', () => {
 
 statsBtn.addEventListener('click', showStats);
 closeStats.addEventListener('click', () => statsModal.classList.remove('show'));
+closeLeader.addEventListener('click', () => leaderModal.classList.remove('show'));
 
 warningOk.addEventListener('click', () => {
     contentWarning.classList.remove('show');

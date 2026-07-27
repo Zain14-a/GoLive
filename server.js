@@ -242,8 +242,7 @@ setInterval(() => {
         const user = onlineUsers.get(entry.id);
         if (!user) { waitingQueue.splice(i, 1); continue; }
         if (!user.lastSearch || Date.now() - user.lastSearch < 3000) continue;
-        for (let j = 0; j < waitingQueue.length; j++) {
-            if (i === j) continue;
+        for (let j = i - 1; j >= 0; j--) {
             const candidate = waitingQueue[j];
             const candidateUser = onlineUsers.get(candidate.id);
             if (!candidateUser) continue;
@@ -252,22 +251,18 @@ setInterval(() => {
             const countryMatch = (user.country === 'any' || user.country === candidateUser.country) &&
                                  (candidateUser.country === 'any' || candidateUser.country === user.country);
             if (genderMatch && countryMatch) {
-                const matchedUser = waitingQueue.splice(Math.max(i, j), 1)[0];
-                const matchedEntry = waitingQueue.splice(Math.min(i, j), 1)[0];
-                const u1 = onlineUsers.get(matchedEntry.id);
-                const u2 = onlineUsers.get(matchedUser.id);
-                if (u1 && u2) {
-                    const roomId = uuidv4();
-                    rooms.set(roomId, { users: [u1.id, u2.id], created: Date.now() });
-                    u1.socket.join(roomId);
-                    u2.socket.join(roomId);
-                    u1.roomId = roomId; u1.partnerId = u2.id;
-                    u2.roomId = roomId; u2.partnerId = u1.id;
-                    u1.socket.emit('matchFound', { roomId, partnerId: u2.id, partnerCountry: u2.country, isInitiator: true });
-                    u2.socket.emit('matchFound', { roomId, partnerId: u1.id, partnerCountry: u1.country, isInitiator: false });
-                    console.log(`[QUEUE MATCH] ${u1.id} <-> ${u2.id}`);
-                    break;
-                }
+                waitingQueue.splice(i, 1);
+                waitingQueue.splice(j, 1);
+                const roomId = uuidv4();
+                rooms.set(roomId, { users: [user.id, candidateUser.id], created: Date.now() });
+                user.socket.join(roomId);
+                candidateUser.socket.join(roomId);
+                user.roomId = roomId; user.partnerId = candidateUser.id;
+                candidateUser.roomId = roomId; candidateUser.partnerId = user.id;
+                user.socket.emit('matchFound', { roomId, partnerId: candidateUser.id, partnerCountry: candidateUser.country, isInitiator: true });
+                candidateUser.socket.emit('matchFound', { roomId, partnerId: user.id, partnerCountry: user.country, isInitiator: false });
+                console.log(`[QUEUE MATCH] ${user.id} <-> ${candidateUser.id}`);
+                break;
             }
         }
     }

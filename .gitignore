@@ -1,5 +1,8 @@
 node_modules/
-npm-debug.log
-server.log
+.env
+cloudflared.exe
+ngrok.zip
+*.zip
+tunnel.txt
 start.bat
-.DS_Store
+.git/

@@ -43,7 +43,10 @@ input { font-family: inherit; }
     font-size: 1.4rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
 }
+.nav-logo img { height: 40px; object-fit: contain; }
 .nav-logo span { color: var(--accent); }
 
 .online-badge {

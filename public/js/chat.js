@@ -2,7 +2,7 @@ const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAtt
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
-const filterCanvas = document.getElementById('filterCanvas');
+const filterOverlay = document.getElementById('filterOverlay');
 const remoteIdle = document.getElementById('remoteIdle');
 const remoteFlag = document.getElementById('remoteFlag');
 const idleText = document.getElementById('idleText');
@@ -157,106 +157,107 @@ function checkMessage(text) {
 }
 
 // ===================== FACE FILTERS =====================
+function clearFilterOverlay() {
+    if (filterOverlay) filterOverlay.innerHTML = '';
+}
+
 function drawFilter() {
-    if (!filterCanvas || !localStream || currentFilter === 'none') {
+    if (!filterOverlay || !localStream || currentFilter === 'none') {
+        clearFilterOverlay();
         cancelAnimationFrame(filterAnimFrame);
         return;
     }
 
-    const ctx = filterCanvas.getContext('2d');
-    const vw = localVideo.videoWidth;
-    const vh = localVideo.videoHeight;
-    if (vw && vh && (filterCanvas.width !== vw || filterCanvas.height !== vh)) {
-        filterCanvas.width = vw;
-        filterCanvas.height = vh;
-    }
-    ctx.clearRect(0, 0, filterCanvas.width, filterCanvas.height);
-
-    const w = filterCanvas.width;
-    const h = filterCanvas.height;
+    clearFilterOverlay();
     const t = Date.now() / 1000;
 
-    ctx.textAlign = 'center';
-
     switch (currentFilter) {
-        case 'cool':
-            ctx.font = `${w * 0.15}px serif`;
-            ctx.fillText('😎', w / 2, h * 0.35);
-            break;
-
-        case 'crown':
-            ctx.font = `${w * 0.18}px serif`;
-            ctx.fillText('👑', w / 2, h * 0.18);
-            break;
-
-        case 'heart':
-            for (let i = 0; i < 8; i++) {
-                const x = w * (0.1 + 0.8 * ((i * 0.37 + t * 0.3) % 1));
-                const y = h * (0.1 + 0.8 * ((i * 0.53 + t * 0.2) % 1));
-                ctx.globalAlpha = 0.5 + 0.5 * Math.sin(t * 2 + i);
-                ctx.font = `${w * 0.08}px serif`;
-                ctx.fillText('❤️', x, y);
-            }
-            ctx.globalAlpha = 1;
-            break;
-
-        case 'star':
-            for (let i = 0; i < 10; i++) {
-                const x = w * (0.05 + 0.9 * ((i * 0.31 + t * 0.15) % 1));
-                const y = h * (0.05 + 0.9 * ((i * 0.47 + t * 0.25) % 1));
-                ctx.globalAlpha = 0.4 + 0.6 * Math.sin(t * 3 + i);
-                ctx.font = `${w * 0.06}px serif`;
-                ctx.fillText('⭐', x, y);
-            }
-            ctx.globalAlpha = 1;
-            break;
-
-        case 'fire':
-            for (let i = 0; i < 6; i++) {
-                const x = w * (0.1 + 0.8 * ((i * 0.41 + Math.sin(t + i) * 0.05) % 1));
-                const y = h * (0.7 + 0.25 * Math.sin(t * 2 + i * 2));
-                ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t * 4 + i);
-                ctx.font = `${w * 0.1}px serif`;
-                ctx.fillText('🔥', x, y);
-            }
-            ctx.globalAlpha = 1;
-            break;
-
-        case 'rainbow': {
-            const colors = ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#8800ff'];
-            const barH = h * 0.05;
-            colors.forEach((c, i) => {
-                ctx.globalAlpha = 0.3;
-                ctx.fillStyle = c;
-                ctx.fillRect(0, h * 0.15 + i * barH, w, barH);
-            });
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = '#fff';
+        case 'cool': {
+            const el = document.createElement('div');
+            el.className = 'filter-emoji';
+            el.textContent = '😎';
+            el.style.cssText = 'position:absolute;top:15%;left:50%;transform:translateX(-50%);font-size:3rem;pointer-events:none;';
+            filterOverlay.appendChild(el);
             break;
         }
-
-        case 'snow':
-            for (let i = 0; i < 15; i++) {
-                const x = w * ((i * 0.23 + t * 0.1) % 1);
-                const y = h * ((i * 0.17 + t * 0.3) % 1);
-                ctx.globalAlpha = 0.5 + 0.5 * Math.sin(t + i);
-                ctx.font = `${w * 0.05}px serif`;
-                ctx.fillText('❄️', x, y);
-            }
-            ctx.globalAlpha = 1;
+        case 'crown': {
+            const el = document.createElement('div');
+            el.className = 'filter-emoji';
+            el.textContent = '👑';
+            el.style.cssText = 'position:absolute;top:2%;left:50%;transform:translateX(-50%);font-size:3.5rem;pointer-events:none;';
+            filterOverlay.appendChild(el);
             break;
-
-        case 'party':
+        }
+        case 'heart': {
             for (let i = 0; i < 8; i++) {
-                const x = w * ((i * 0.29 + Math.sin(t + i) * 0.1) % 1);
-                const y = h * ((i * 0.19 + t * 0.2) % 1);
-                ctx.globalAlpha = 0.6;
-                ctx.font = `${w * 0.07}px serif`;
-                const emojis = ['🎉', '🎊', '🎈', '🪅'];
-                ctx.fillText(emojis[i % emojis.length], x, y);
+                const el = document.createElement('div');
+                el.textContent = '❤️';
+                const x = 10 + 80 * ((i * 0.37 + t * 0.3) % 1);
+                const y = 10 + 80 * ((i * 0.53 + t * 0.2) % 1);
+                const opacity = 0.5 + 0.5 * Math.sin(t * 2 + i);
+                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.8rem;opacity:${opacity};pointer-events:none;`;
+                filterOverlay.appendChild(el);
             }
-            ctx.globalAlpha = 1;
             break;
+        }
+        case 'star': {
+            for (let i = 0; i < 10; i++) {
+                const el = document.createElement('div');
+                el.textContent = '⭐';
+                const x = 5 + 90 * ((i * 0.31 + t * 0.15) % 1);
+                const y = 5 + 90 * ((i * 0.47 + t * 0.25) % 1);
+                const opacity = 0.4 + 0.6 * Math.sin(t * 3 + i);
+                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.2rem;opacity:${opacity};pointer-events:none;`;
+                filterOverlay.appendChild(el);
+            }
+            break;
+        }
+        case 'fire': {
+            for (let i = 0; i < 6; i++) {
+                const el = document.createElement('div');
+                el.textContent = '🔥';
+                const x = 10 + 80 * ((i * 0.41 + Math.sin(t + i) * 0.05) % 1);
+                const y = 70 + 25 * Math.sin(t * 2 + i * 2);
+                const opacity = 0.6 + 0.4 * Math.sin(t * 4 + i);
+                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:2rem;opacity:${opacity};pointer-events:none;`;
+                filterOverlay.appendChild(el);
+            }
+            break;
+        }
+        case 'rainbow': {
+            const colors = ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#8800ff'];
+            const barH = 5;
+            colors.forEach((c, i) => {
+                const el = document.createElement('div');
+                el.style.cssText = `position:absolute;left:0;top:${15 + i * barH}%;width:100%;height:${barH}%;background:${c};opacity:0.3;pointer-events:none;`;
+                filterOverlay.appendChild(el);
+            });
+            break;
+        }
+        case 'snow': {
+            for (let i = 0; i < 15; i++) {
+                const el = document.createElement('div');
+                el.textContent = '❄️';
+                const x = (i * 23 + t * 10) % 100;
+                const y = (i * 17 + t * 30) % 100;
+                const opacity = 0.5 + 0.5 * Math.sin(t + i);
+                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.2rem;opacity:${opacity};pointer-events:none;`;
+                filterOverlay.appendChild(el);
+            }
+            break;
+        }
+        case 'party': {
+            const emojis = ['🎉', '🎊', '🎈', '🪅'];
+            for (let i = 0; i < 8; i++) {
+                const el = document.createElement('div');
+                el.textContent = emojis[i % emojis.length];
+                const x = (i * 29 + Math.sin(t + i) * 10) % 100;
+                const y = (i * 19 + t * 20) % 100;
+                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.5rem;opacity:0.6;pointer-events:none;`;
+                filterOverlay.appendChild(el);
+            }
+            break;
+        }
     }
 
     filterAnimFrame = requestAnimationFrame(drawFilter);
@@ -266,9 +267,10 @@ function setFilter(name) {
     currentFilter = name;
     if (name === 'none') {
         cancelAnimationFrame(filterAnimFrame);
-        filterCanvas.style.display = 'none';
+        clearFilterOverlay();
+        if (filterOverlay) filterOverlay.style.display = 'none';
     } else {
-        filterCanvas.style.display = 'block';
+        if (filterOverlay) filterOverlay.style.display = 'block';
         cancelAnimationFrame(filterAnimFrame);
         drawFilter();
     }

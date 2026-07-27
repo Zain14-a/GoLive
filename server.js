@@ -5,12 +5,18 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: '*' }
+    cors: { origin: '*' },
+    pingTimeout: 60000,
+    pingInterval: 25000,
+    transports: ['websocket', 'polling']
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/ping', (req, res) => res.send('ok'));
 
 const onlineUsers = new Map();
 const waitingQueue = [];

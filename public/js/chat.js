@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
@@ -66,7 +66,12 @@ const RTC_CONFIG = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' }
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+        { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
     ]
 };
 
@@ -548,10 +553,28 @@ function startVideoAnalysis() {
 }
 
 // ===================== INIT =====================
+setInterval(() => { fetch('/ping').catch(() => {}); }, 300000);
+
+socket.on('connect', () => {
+    console.log('Connected to server');
+    setStatus('متصل بالسيرفر', 'green');
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+    setStatus('انقطع الاتصال بالسيرفر', 'red');
+    addMsg('انقطع الاتصال بالسيرفر. جاري إعادة الاتصال...', 'sys');
+});
+
+socket.on('connect_error', (err) => {
+    console.error('Connection error:', err.message);
+    setStatus('خطأ بالاتصال', 'red');
+});
+
 (async () => {
     const ok = await initCamera();
     if (ok) {
-        setTimeout(() => startSearch(), 800);
+        setTimeout(() => startSearch(), 1500);
         startVideoAnalysis();
     }
 

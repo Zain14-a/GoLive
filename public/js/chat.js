@@ -369,12 +369,22 @@ function closePeerConnection() {
 }
 
 // ===================== SEARCH =====================
+let searchInterval = null;
+
 function startSearch() {
     isSearching = true;
     showIdle('جاري البحث عن شخص...');
     setStatus('جاري البحث...', 'red');
     addMsg('جاري البحث عن شخص...', 'sys');
     socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
+
+    clearInterval(searchInterval);
+    searchInterval = setInterval(() => {
+        if (isSearching && !currentRoomId) {
+            console.log('Retrying search...');
+            socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
+        }
+    }, 5000);
 }
 
 let chatStartTime = null;
@@ -422,6 +432,7 @@ socket.on('searching', () => {
 socket.on('matchFound', async (data) => {
     currentRoomId = data.roomId;
     isSearching = false;
+    clearInterval(searchInterval);
     chatStartTime = Date.now();
     if (data.partnerCountry && COUNTRY_FLAGS[data.partnerCountry]) {
         remoteFlag.textContent = COUNTRY_FLAGS[data.partnerCountry];

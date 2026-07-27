@@ -41,6 +41,9 @@ io.on('connection', (socket) => {
         user.gender = filters.gender;
         user.country = filters.country;
         user.prefGender = filters.prefGender;
+        user.lastSearch = Date.now();
+
+        console.log(`[findMatch] ${socket.id} gender=${filters.gender} country=${filters.country} pref=${filters.prefGender} queue=${waitingQueue.length}`);
 
         const queueIdx = waitingQueue.findIndex(q => q.id === socket.id);
         if (queueIdx > -1) waitingQueue.splice(queueIdx, 1);
@@ -94,7 +97,7 @@ io.on('connection', (socket) => {
                     isInitiator: false
                 });
 
-                console.log(`Match: ${socket.id} <-> ${partner.id}`);
+                console.log(`[MATCH] ${socket.id} <-> ${partner.id}`);
             } else {
                 waitingQueue.push({ id: socket.id, gender: user.gender, country: user.country, prefGender: user.prefGender });
                 socket.emit('searching');
@@ -102,7 +105,7 @@ io.on('connection', (socket) => {
         } else {
             waitingQueue.push({ id: socket.id, gender: user.gender, country: user.country, prefGender: user.prefGender });
             socket.emit('searching');
-            console.log(`Waiting: ${socket.id} (queue: ${waitingQueue.length})`);
+            console.log(`[WAITING] ${socket.id} queue=${waitingQueue.length}`);
         }
     });
 
@@ -228,5 +231,44 @@ app.get('/chat', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
+
+setInterval(() => {
+    if (waitingQueue.length < 2) return;
+    console.log(`[QUEUE CHECK] ${waitingQueue.length} waiting`);
+    for (let i = waitingQueue.length - 1; i >= 0; i--) {
+        const entry = waitingQueue[i];
+        const user = onlineUsers.get(entry.id);
+        if (!user) { waitingQueue.splice(i, 1); continue; }
+        if (!user.lastSearch || Date.now() - user.lastSearch < 3000) continue;
+        for (let j = 0; j < waitingQueue.length; j++) {
+            if (i === j) continue;
+            const candidate = waitingQueue[j];
+            const candidateUser = onlineUsers.get(candidate.id);
+            if (!candidateUser) continue;
+            const genderMatch = (user.prefGender === 'any' || user.prefGender === candidateUser.gender) &&
+                                (candidateUser.prefGender === 'any' || candidateUser.prefGender === user.gender);
+            const countryMatch = (user.country === 'any' || user.country === candidateUser.country) &&
+                                 (candidateUser.country === 'any' || candidateUser.country === user.country);
+            if (genderMatch && countryMatch) {
+                const matchedUser = waitingQueue.splice(Math.max(i, j), 1)[0];
+                const matchedEntry = waitingQueue.splice(Math.min(i, j), 1)[0];
+                const u1 = onlineUsers.get(matchedEntry.id);
+                const u2 = onlineUsers.get(matchedUser.id);
+                if (u1 && u2) {
+                    const roomId = uuidv4();
+                    rooms.set(roomId, { users: [u1.id, u2.id], created: Date.now() });
+                    u1.socket.join(roomId);
+                    u2.socket.join(roomId);
+                    u1.roomId = roomId; u1.partnerId = u2.id;
+                    u2.roomId = roomId; u2.partnerId = u1.id;
+                    u1.socket.emit('matchFound', { roomId, partnerId: u2.id, partnerCountry: u2.country, isInitiator: true });
+                    u2.socket.emit('matchFound', { roomId, partnerId: u1.id, partnerCountry: u1.country, isInitiator: false });
+                    console.log(`[QUEUE MATCH] ${u1.id} <-> ${u2.id}`);
+                    break;
+                }
+            }
+        }
+    }
+}, 3000);

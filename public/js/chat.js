@@ -1,5 +1,11 @@
 const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
 
+// Lang init for chat
+document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
+document.documentElement.lang = Lang.getCurrent();
+Lang.apply();
+Lang.createLangSelector(document.getElementById('langContainerChat'));
+
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const filterOverlay = document.getElementById('filterOverlay');
@@ -46,6 +52,15 @@ let filterAnimFrame = null;
 let activeParticles = [];
 let partnerCountry = null;
 
+function ct(key) {
+    const lang = Lang.getCurrent();
+    const data = LANG_DATA[lang] || LANG_DATA['ar'];
+    const keys = ('chat.' + key).split('.');
+    let val = data;
+    for (const k of keys) { if (val && typeof val === 'object') val = val[k]; else return key; }
+    return val || key;
+}
+
 const COUNTRY_FLAGS = {
     JO: '\u{1F1EF}\u{1F1F4}', SA: '\u{1F1F8}\u{1F1E6}', AE: '\u{1F1E6}\u{1F1EA}',
     EG: '\u{1F1EA}\u{1F1EC}', IQ: '\u{1F1EE}\u{1F1F1}', KW: '\u{1F1F0}\u{1F1FC}',
@@ -54,16 +69,20 @@ const COUNTRY_FLAGS = {
     MA: '\u{1F1F2}\u{1F1E6}', DZ: '\u{1F1E9}\u{1F1FF}', TN: '\u{1F1F9}\u{1F1F3}',
     LY: '\u{1F1F1}\u{1F1FE}', SD: '\u{1F1F8}\u{1F1E9}', YE: '\u{1F1FE}\u{1F1EA}',
     MR: '\u{1F1F2}\u{1F1F7}', SO: '\u{1F1F8}\u{1F1F4}', DJ: '\u{1F1E9}\u{1F1EF}',
-    KM: '\u{1F1F0}\u{1F1F2}', TD: '\u{1F1F9}\u{1F1E9}'
+    KM: '\u{1F1F0}\u{1F1F2}', TD: '\u{1F1F9}\u{1F1E9}',
+    US: '\u{1F1FA}\u{1F1F8}', GB: '\u{1F1EC}\u{1F1E7}', FR: '\u{1F1EB}\u{1F1F7}',
+    DE: '\u{1F1E9}\u{1F1EA}', IT: '\u{1F1EE}\u{1F1F9}', ES: '\u{1F1EA}\u{1F1F8}',
+    JP: '\u{1F1EF}\u{1F1F5}', KR: '\u{1F1F0}\u{1F1F7}', CN: '\u{1F1E8}\u{1F1F3}',
+    IN: '\u{1F1EE}\u{1F1F3}', TR: '\u{1F1F9}\u{1F1F7}', BR: '\u{1F1E7}\u{1F1F7}',
+    CA: '\u{1F1E8}\u{1F1E6}', AU: '\u{1F1E6}\u{1F1FA}', RU: '\u{1F1F7}\u{1F1FA}',
+    PK: '\u{1F1F5}\u{1F1F0}', BD: '\u{1F1E7}\u{1F1E9}', TH: '\u{1F1F9}\u{1F1ED}',
+    VN: '\u{1F1FB}\u{1F1F3}', PH: '\u{1F1F5}\u{1F1ED}', ID: '\u{1F1EE}\u{1F1E9}',
+    MY: '\u{1F1F2}\u{1F1FE}', SG: '\u{1F1F8}\u{1F1EC}'
 };
 
-const COUNTRY_NAMES = {
-    JO: 'الأردن', SA: 'السعودية', AE: 'الإمارات', EG: 'مصر', IQ: 'العراق',
-    KW: 'الكويت', QA: 'قطر', BH: 'البحرين', OM: 'عُمان', LB: 'لبنان',
-    SY: 'سوريا', PS: 'فلسطين', MA: 'المغرب', DZ: 'الجزائر', TN: 'تونس',
-    LY: 'ليبيا', SD: 'السودان', YE: 'اليمن', MR: 'موريتانيا', SO: 'الصومال',
-    DJ: 'جيبوتي', KM: 'جزر القمر', TD: 'تشاد'
-};
+function getCountryName(code) {
+    return ct('messages.countries.' + code) || code;
+}
 
 const RTC_CONFIG = {
     iceServers: [
@@ -119,7 +138,7 @@ function getLevel(points) {
 function showLevelUp(points) {
     const lvl = getLevel(points);
     if (points === 50 || points === 150 || points === 300 || points === 500) {
-        addMsg(`مبروك! وصلت المستوى ${lvl.name}`, 'sys');
+        addMsg(ct('messages.levelUp') + ' ' + lvl.name, 'sys');
     }
 }
 
@@ -139,7 +158,7 @@ function showStats() {
     s.countries.forEach(c => {
         const tag = document.createElement('span');
         tag.className = 'country-tag';
-        tag.textContent = (COUNTRY_FLAGS[c] || '') + ' ' + (COUNTRY_NAMES[c] || c);
+        tag.textContent = (COUNTRY_FLAGS[c] || '') + ' ' + getCountryName(c);
         tagsEl.appendChild(tag);
     });
     statsModal.classList.add('show');
@@ -321,8 +340,8 @@ async function initCamera() {
         return true;
     } catch (e) {
         console.error('Camera error:', e);
-        addMsg('ما قدرنا نفتح الكاميرا. تأكد إنك سمحت بالصلاحية.', 'sys');
-        setStatus('خطأ بالكاميرا', 'red');
+        addMsg(ct('messages.cameraError'), 'sys');
+        setStatus(ct('status.cameraError'), 'red');
         return false;
     }
 }
@@ -351,8 +370,8 @@ function createPeerConnection(isInitiator) {
 
     peerConnection.onconnectionstatechange = () => {
         const state = peerConnection.connectionState;
-        if (state === 'connected') setStatus('متصل', 'green');
-        else if (state === 'disconnected' || state === 'failed') setStatus('انقطع الاتصال', 'red');
+        if (state === 'connected') setStatus(ct('status.connected'), 'green');
+        else if (state === 'disconnected' || state === 'failed') setStatus(ct('status.disconnected'), 'red');
     };
 
     if (isInitiator) {
@@ -378,9 +397,9 @@ let searchInterval = null;
 
 function startSearch() {
     isSearching = true;
-    showIdle('جاري البحث عن شخص...');
-    setStatus('جاري البحث...', 'red');
-    addMsg('جاري البحث عن شخص...', 'sys');
+    showIdle(ct('messages.searching'));
+    setStatus(ct('status.searching'), 'red');
+    addMsg(ct('messages.searching'), 'sys');
     socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
 
     clearInterval(searchInterval);
@@ -400,8 +419,8 @@ function handleSkip() {
     }
     socket.emit('skip');
     closePeerConnection();
-    showIdle('جاري البحث عن شخص...');
-    setStatus('جاري البحث...', 'red');
+    showIdle(ct('messages.searching'));
+    setStatus(ct('status.searching'), 'red');
     isSearching = true;
     chatStartTime = null;
     partnerCountry = null;
@@ -414,8 +433,8 @@ function handleStop() {
     }
     socket.emit('stopChat');
     closePeerConnection();
-    showIdle('أيقفت المحادثة. اضغط "التالي" للمتابعة');
-    setStatus('متوقف', 'red');
+    showIdle(ct('messages.stopped'));
+    setStatus(ct('status.stopped'), 'red');
     isSearching = false;
     currentRoomId = null;
     chatStartTime = null;
@@ -428,8 +447,8 @@ socket.on('onlineCount', () => {});
 
 socket.on('searching', () => {
     isSearching = true;
-    showIdle('جاري البحث عن شخص...');
-    setStatus('جاري البحث...', 'red');
+    showIdle(ct('messages.searching'));
+    setStatus(ct('status.searching'), 'red');
 });
 
 socket.on('matchFound', async (data) => {
@@ -443,7 +462,7 @@ socket.on('matchFound', async (data) => {
     } else {
         remoteFlag.textContent = '\u{1F30D}';
     }
-    addMsg('تم الاتصال بشخص!', 'sys');
+    addMsg(ct('messages.connected'), 'sys');
 
     const s = getStats();
     if (!s.startTime) { s.startTime = Date.now(); saveStats(s); }
@@ -470,7 +489,7 @@ socket.on('signal', async (data) => {
 socket.on('newMessage', (data) => {
     const moderated = Yeame.moderateIncoming(data.text);
     if (moderated === null) {
-        addMsg('[تم حجب رسالة - محتوى مخالف]', 'sys');
+        addMsg(ct('messages.blocked'), 'sys');
         return;
     }
     addMsg(moderated, 'recv');
@@ -486,9 +505,9 @@ socket.on('partnerDisconnected', () => {
     currentRoomId = null;
     chatStartTime = null;
     partnerCountry = null;
-    showIdle('غادر الشخص. اضغط "التالي" للبحث عن شخص جديد');
-    setStatus('انقطع الاتصال', 'red');
-    addMsg('غادر الشخص المحادثة.', 'sys');
+    showIdle(ct('messages.skipped'));
+    setStatus(ct('status.disconnected'), 'red');
+    addMsg(ct('messages.left'), 'sys');
     captionBar.style.display = 'none';
 });
 
@@ -544,7 +563,7 @@ cancelReport.addEventListener('click', () => reportModal.classList.remove('show'
 submitReport.addEventListener('click', () => {
     const sel = document.querySelector('input[name="rpt"]:checked');
     if (sel) {
-        addMsg('تم الإبلاغ. شكراً لمساعدتنا.', 'sys');
+        addMsg(ct('messages.reported'), 'sys');
         reportModal.classList.remove('show');
         handleSkip();
     }
@@ -577,18 +596,18 @@ setInterval(() => { fetch('/ping').catch(() => {}); }, 300000);
 
 socket.on('connect', () => {
     console.log('Connected to server');
-    setStatus('متصل بالسيرفر', 'green');
+    setStatus(ct('status.connected'), 'green');
 });
 
 socket.on('disconnect', () => {
     console.log('Disconnected from server');
-    setStatus('انقطع الاتصال بالسيرفر', 'red');
-    addMsg('انقطع الاتصال بالسيرفر. جاري إعادة الاتصال...', 'sys');
+    setStatus(ct('status.disconnected'), 'red');
+    addMsg(ct('messages.disconnected'), 'sys');
 });
 
 socket.on('connect_error', (err) => {
     console.error('Connection error:', err.message);
-    setStatus('خطأ بالاتصال', 'red');
+    setStatus(ct('status.error'), 'red');
 });
 
 (async () => {

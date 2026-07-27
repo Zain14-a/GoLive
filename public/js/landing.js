@@ -14,6 +14,13 @@ const mockNextBtn = document.getElementById('mockNextBtn');
 const phoneImages = ['img/image-4.png', 'img/1.jpg', 'img/2.jpg', 'img/3.jpg'];
 let currentImgIndex = 0;
 
+// Language init
+document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
+document.documentElement.lang = Lang.getCurrent();
+Lang.apply();
+Lang.buildCountrySelect(countrySel);
+Lang.createLangSelector(document.getElementById('langContainer'));
+
 // Phone image cycling
 if (mockNextBtn) {
     mockNextBtn.addEventListener('click', (e) => {
@@ -118,9 +125,16 @@ function updatePhoneClock() {
     const timeEl = document.getElementById('phoneTime');
     const dateEl = document.getElementById('phoneDate');
     if (timeEl) timeEl.textContent = h + ':' + m;
-    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-    if (dateEl) dateEl.textContent = days[now.getDay()] + '، ' + now.getDate() + ' ' + months[now.getMonth()];
+    const lang = Lang.getCurrent();
+    if (lang === 'en') {
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
+    } else {
+        const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        if (dateEl) dateEl.textContent = days[now.getDay()] + '، ' + now.getDate() + ' ' + months[now.getMonth()];
+    }
 }
 updatePhoneClock();
 setInterval(updatePhoneClock, 10000);

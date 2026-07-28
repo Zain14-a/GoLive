@@ -27,6 +27,7 @@
                 <span>Yeame</span>
                 <span class="yeame-status" id="yeameStatus"></span>
             </div>
+            <button id="themeToggleChat" class="theme-btn" title="الوضع الليلي/النهاري">🌙</button>
             <button id="statsBtn" class="topbar-icon" title="إحصائياتي">&#128200;</button>
             <button id="reportBtn" class="topbar-report" title="إبلاغ">&#9888;</button>
         </div>
@@ -175,6 +176,34 @@
         </div>
     </div>
 
+    <!-- Bot Chat Invite -->
+    <div class="bot-invite" id="botInvite">
+        <div class="bot-invite-inner">
+            <span>🤖</span>
+            <div>
+                <strong>AI Bot</strong>
+                <p>تحدث مع البوت الذكي لحين العثور على شخص</p>
+            </div>
+            <button id="startBotBtn" class="bot-start-btn">ابدأ</button>
+        </div>
+    </div>
+
+    <!-- Bot Chat Modal -->
+    <div class="bot-modal" id="botModal">
+        <div class="bot-header">
+            <span>🤖 AI Bot</span>
+            <button id="closeBotBtn" class="bot-close">&times;</button>
+        </div>
+        <div class="bot-messages" id="botMessages">
+            <div class="bot-msg bot">مرحباً! أنا بوت GoLive الذكي. اسألني أي شيء!</div>
+        </div>
+        <div class="bot-input-row">
+            <input type="text" id="botInput" placeholder="اكتب رسالة للبوت..." maxlength="200">
+            <button id="botSendBtn" class="send-icon">&#10148;</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/translations.js"></script>
     <script src="js/lang.js"></script>

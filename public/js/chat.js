@@ -509,6 +509,9 @@ socket.on('partnerDisconnected', () => {
     setStatus(ct('status.disconnected'), 'red');
     addMsg(ct('messages.left'), 'sys');
     captionBar.style.display = 'none';
+    setTimeout(() => {
+        if (document.getElementById('botInvite')) document.getElementById('botInvite').classList.add('show');
+    }, 1000);
 });
 
 socket.on('startSearch', () => startSearch());
@@ -620,3 +623,179 @@ socket.on('connect_error', (err) => {
     const s = getStats();
     pointsDisplay.textContent = s.points;
 })();
+
+// ===================== THEME TOGGLE =====================
+(function() {
+    const saved = localStorage.getItem('golive_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    const updateBtns = () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const emoji = isLight ? '🌙' : '☀️';
+        document.querySelectorAll('#themeToggle, #themeToggleChat').forEach(b => { if (b) b.textContent = emoji; });
+    };
+    updateBtns();
+    document.querySelectorAll('#themeToggle, #themeToggleChat').forEach(btn => {
+        if (btn) btn.addEventListener('click', () => {
+            const cur = document.documentElement.getAttribute('data-theme');
+            const next = cur === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('golive_theme', next);
+            updateBtns();
+        });
+    });
+})();
+
+// ===================== AI FACE FILTER =====================
+let aiFilterActive = false;
+let faceDetectionInterval = null;
+const faceCanvas = document.createElement('canvas');
+faceCanvas.className = 'face-overlay';
+faceCanvas.id = 'faceCanvas';
+
+const aiBtn = document.createElement('button');
+aiBtn.id = 'aiFilterToggle';
+aiBtn.textContent = '🎯 AI';
+aiBtn.title = 'AI Face Filters';
+document.getElementById('filtersBar')?.appendChild(aiBtn);
+
+async function initFaceApi() {
+    try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        return true;
+    } catch { return false; }
+}
+
+function startAIFilter() {
+    if (!localVideo || !localStream) return;
+    const parent = localVideo.parentElement;
+    if (!document.getElementById('faceCanvas')) parent.appendChild(faceCanvas);
+    const ctx = faceCanvas.getContext('2d');
+    faceCanvas.width = localVideo.videoWidth || 320;
+    faceCanvas.height = localVideo.videoHeight || 240;
+
+    faceDetectionInterval = setInterval(async () => {
+        if (!localVideo || !localVideo.videoWidth) return;
+        faceCanvas.width = localVideo.videoWidth;
+        faceCanvas.height = localVideo.videoHeight;
+        ctx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
+        try {
+            const detections = await faceapi.detectAllFaces(localVideo, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.3 })).withFaceLandmarks();
+            if (detections.length > 0) {
+                const d = detections[0];
+                const leftEye = d.landmarks.getLeftEye();
+                const rightEye = d.landmarks.getRightEye();
+                const jaw = d.landmarks.getJawOutline();
+                ctx.save();
+                ctx.scale(-1, 1);
+                ctx.translate(-faceCanvas.width, 0);
+                const eyeCX = (leftEye[0].x + rightEye[3].x) / 2;
+                const eyeCY = (leftEye[0].y + rightEye[3].y) / 2;
+                const eDist = Math.abs(rightEye[3].x - leftEye[0].x);
+                const gW = eDist * 1.8;
+                const gH = gW * 0.4;
+                ctx.strokeStyle = '#ff3b5c';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(eyeCX - gW / 2, eyeCY - gH / 2, gW, gH);
+                ctx.beginPath();
+                ctx.moveTo(eyeCX - 5, eyeCY);
+                ctx.lineTo(eyeCX + 5, eyeCY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(eyeCX - gW / 2, eyeCY);
+                ctx.lineTo(eyeCX - gW / 2 - 20, eyeCY - 10);
+                ctx.moveTo(eyeCX + gW / 2, eyeCY);
+                ctx.lineTo(eyeCX + gW / 2 + 20, eyeCY - 10);
+                ctx.stroke();
+                const topY = jaw[0].y;
+                const headW = Math.abs(jaw[16].x - jaw[0].x);
+                ctx.fillStyle = '#ff3b5c';
+                ctx.fillRect(eyeCX - headW * 0.4, topY - headW * 0.5, headW * 0.8, headW * 0.3);
+                ctx.fillRect(eyeCX - headW * 0.6, topY - headW * 0.5, headW * 1.2, headW * 0.1);
+                ctx.restore();
+            }
+        } catch {}
+    }, 200);
+}
+
+function stopAIFilter() {
+    clearInterval(faceDetectionInterval);
+    const c = document.getElementById('faceCanvas');
+    if (c) c.remove();
+    aiFilterActive = false;
+    aiBtn.classList.remove('active');
+}
+
+aiBtn.addEventListener('click', async () => {
+    if (aiFilterActive) { stopAIFilter(); return; }
+    aiBtn.textContent = '⏳ LOADING...';
+    aiBtn.disabled = true;
+    const ok = await initFaceApi();
+    aiBtn.disabled = false;
+    if (ok) {
+        aiFilterActive = true;
+        aiBtn.textContent = '🎯 AI';
+        aiBtn.classList.add('active');
+        startAIFilter();
+        document.querySelectorAll('#filtersBar .filter-chip').forEach(c => c.classList.remove('active'));
+    } else {
+        aiBtn.textContent = '🎯 AI';
+        addMsg('AI face filters not available', 'sys');
+    }
+});
+
+// ===================== CHAT BOT =====================
+const botResponses = {
+    default: ['مرحباً! أنا بوت GoLive 😊 اسألني أي سؤال.', 'كيف حالك؟ أنا هنا للتحدث معك!', 'وش رايك في GoLive؟ أحلى موقع للمحادثة!', 'تقدر تسألني عن أي شيء، أنا ذكي 😎'],
+    hello: ['مرحباً! كيف أخدمك؟', 'أهلاً وسهلاً!', 'مرحبتين! كيفك؟'],
+    how: ['الحمد لله، أنا بخير! وأنت؟', 'تمام، شكراً للسؤال!', 'ممتاز! متحمس أساعدك'],
+    name: ['اسمي بوت GoLive 🤖', 'أنا البوت الذكي لـ GoLive', 'ناديني أي اسم تحب!'],
+    age: ['عمري يوم واحد 😅', 'لسة مولود جديد!'],
+    love: ['أحب أساعد الناس 💙', 'حبكم أنتم ❤️'],
+    bye: ['الله معاك!', 'مع السلامة، تشرفت فيك!', 'يريت ترجع تتحدث معي مرة ثانية 👋'],
+    bad: ['لا تحلف لو سمحت 🙏', 'كلام حلو أحسن', 'أدب رجاءً'],
+};
+
+function getBotResponse(input) {
+    const l = input.toLowerCase().trim();
+    let pool = botResponses.default;
+    if (/^(مرحبا|hello|hi|هلا|السلام|أهلا)/.test(l)) pool = botResponses.hello;
+    else if (/^(كيف|شلون|how|ازيك|عامل)/.test(l)) pool = botResponses.how;
+    else if (/^(اسم|اسمك|what.*name|شو.*اسم)/.test(l)) pool = botResponses.name;
+    else if (/^(age|عمري|عمر)/.test(l)) pool = botResponses.age;
+    else if (/^(love|حب|أحب|بحب|عشق)/.test(l)) pool = botResponses.love;
+    else if (/^(با|باي|bye|مع.*سلام|سلام|شكرا)/.test(l)) pool = botResponses.bye;
+    else if (/^(كس|أمك|حرام|زق|خرة|عاه|شرموط|زب).*/.test(l)) pool = botResponses.bad;
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function addBotMsg(text, type) {
+    const el = document.createElement('div');
+    el.className = 'bot-msg ' + type;
+    el.textContent = text;
+    document.getElementById('botMessages').appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+document.getElementById('startBotBtn')?.addEventListener('click', () => {
+    document.getElementById('botInvite')?.classList.remove('show');
+    document.getElementById('botModal')?.classList.add('show');
+    document.getElementById('botInput')?.focus();
+});
+
+document.getElementById('closeBotBtn')?.addEventListener('click', () => {
+    document.getElementById('botModal')?.classList.remove('show');
+});
+
+document.getElementById('botSendBtn')?.addEventListener('click', () => {
+    const input = document.getElementById('botInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addBotMsg(text, 'user');
+    input.value = '';
+    setTimeout(() => addBotMsg(getBotResponse(text), 'bot'), 500 + Math.random() * 1000);
+});
+
+document.getElementById('botInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('botSendBtn')?.click();
+});

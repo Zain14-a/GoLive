@@ -15,8 +15,60 @@ const io = new Server(server, {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
 app.get('/ping', (req, res) => res.send('ok'));
+app.post('/api/bot', async (req, res) => {
+    try {
+        const { messages, gender } = req.body;
+        const GEMINI_KEY = process.env.GEMINI_KEY;
+        if (!GEMINI_KEY) {
+            return res.json({ text: fallbackBotResponse(messages) });
+        }
+        const contents = messages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.text }]
+        }));
+        const system = `You are a ${gender === 'female' ? 'female' : 'male'} video chat assistant named ${gender === 'female' ? 'Eve' : 'Adam'}. You speak Arabic naturally and casually. Your personality is friendly, funny, and warm. Keep responses short (1-2 sentences). You are pretending to be a real person on a random video chat. Never say you are an AI. Act natural like a normal person. Speak in Arabic dialect (Gulf/Arabic mix).`;
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                systemInstruction: { parts: [{ text: system }] },
+                contents,
+                generationConfig: { temperature: 0.9, maxOutputTokens: 100 }
+            })
+        });
+        if (!resp.ok) {
+            const e = await resp.text();
+            console.error('Gemini API error:', e);
+            return res.json({ text: fallbackBotResponse(messages) });
+        }
+        const data = await resp.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || fallbackBotResponse(messages);
+        res.json({ text });
+    } catch (err) {
+        console.error('Bot error:', err);
+        res.json({ text: fallbackBotResponse(req.body?.messages || []) });
+    }
+});
+
+function fallbackBotResponse(messages) {
+    const last = messages?.[messages.length - 1]?.text?.toLowerCase() || '';
+    const arr = [
+        'هههه صج؟ 😂', 'والله شي جميل!', 'ايوا عادي، وانت شو رأيك؟',
+        'مش عارفة صراحة، شو تقترح؟', 'هههه حلو الكلام دا!',
+        'اي والله، أنا مثلك تماماً', 'عنجد؟ حلوه!', 'طيب شو أخبارك اليوم؟',
+        'حلو سؤال! بس أنا جايعة شوي 😅', 'واو، أنا كمان بحب هالشي!'
+    ];
+    if (/مرحبا|هلا|السلام/i.test(last)) return 'مرحبا! كيفك؟ 😊';
+    if (/كيفك|شلونك|كيف حال/i.test(last)) return 'الحمد لله تمام، وانت شو أخبارك؟';
+    if (/اسمك|شو اسم/i.test(last)) return 'اسمي Adam 😎 وانت؟';
+    if (/وين|من وين/i.test(last)) return 'أنا من المنطقة العربية، وانت؟';
+    if (/شو بتعمل|بتشتغل/i.test(last)) return 'أنا أدرس حالياً، وانت شو بتسوي؟';
+    if (/باي|سلام|خلاص/i.test(last)) return 'الله معاك، كان حلو اللقاء! 👋';
+    return arr[Math.floor(Math.random() * arr.length)];
+}
 
 const onlineUsers = new Map();
 const waitingQueue = [];

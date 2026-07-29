@@ -452,6 +452,7 @@ socket.on('searching', () => {
 });
 
 socket.on('matchFound', async (data) => {
+    stopBotAvatar();
     currentRoomId = data.roomId;
     isSearching = false;
     clearInterval(searchInterval);
@@ -744,56 +745,112 @@ aiBtn.addEventListener('click', async () => {
     }
 });
 
-// ===================== CHAT BOT =====================
-const botResponses = {
-    default: ['مرحباً! أنا بوت GoLive 😊 اسألني أي سؤال.', 'كيف حالك؟ أنا هنا للتحدث معك!', 'وش رايك في GoLive؟ أحلى موقع للمحادثة!', 'تقدر تسألني عن أي شيء، أنا ذكي 😎'],
-    hello: ['مرحباً! كيف أخدمك؟', 'أهلاً وسهلاً!', 'مرحبتين! كيفك؟'],
-    how: ['الحمد لله، أنا بخير! وأنت؟', 'تمام، شكراً للسؤال!', 'ممتاز! متحمس أساعدك'],
-    name: ['اسمي بوت GoLive 🤖', 'أنا البوت الذكي لـ GoLive', 'ناديني أي اسم تحب!'],
-    age: ['عمري يوم واحد 😅', 'لسة مولود جديد!'],
-    love: ['أحب أساعد الناس 💙', 'حبكم أنتم ❤️'],
-    bye: ['الله معاك!', 'مع السلامة، تشرفت فيك!', 'يريت ترجع تتحدث معي مرة ثانية 👋'],
-    bad: ['لا تحلف لو سمحت 🙏', 'كلام حلو أحسن', 'أدب رجاءً'],
-};
+// ===================== AVATAR + AI BOT =====================
+let avatarRenderer = null;
+let avatarCanvas = null;
+let botActive = false;
+let botConversation = [];
+let botTypingTimer = null;
 
-function getBotResponse(input) {
-    const l = input.toLowerCase().trim();
-    let pool = botResponses.default;
-    if (/^(مرحبا|hello|hi|هلا|السلام|أهلا)/.test(l)) pool = botResponses.hello;
-    else if (/^(كيف|شلون|how|ازيك|عامل)/.test(l)) pool = botResponses.how;
-    else if (/^(اسم|اسمك|what.*name|شو.*اسم)/.test(l)) pool = botResponses.name;
-    else if (/^(age|عمري|عمر)/.test(l)) pool = botResponses.age;
-    else if (/^(love|حب|أحب|بحب|عشق)/.test(l)) pool = botResponses.love;
-    else if (/^(با|باي|bye|مع.*سلام|سلام|شكرا)/.test(l)) pool = botResponses.bye;
-    else if (/^(كس|أمك|حرام|زق|خرة|عاه|شرموط|زب).*/.test(l)) pool = botResponses.bad;
-    return pool[Math.floor(Math.random() * pool.length)];
+function createAvatarCanvas() {
+    if (!avatarCanvas) {
+        avatarCanvas = document.createElement('canvas');
+        avatarCanvas.id = 'avatarCanvas';
+        avatarCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;border-radius:12px;';
+    }
+    return avatarCanvas;
 }
 
-function addBotMsg(text, type) {
-    const el = document.createElement('div');
-    el.className = 'bot-msg ' + type;
-    el.textContent = text;
-    document.getElementById('botMessages').appendChild(el);
-    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
-}
+function startBotAvatar() {
+    const remoteBlock = document.getElementById('remoteBlock');
+    if (!remoteBlock) return;
+    const existing = document.getElementById('avatarCanvas');
+    if (!existing) remoteBlock.appendChild(createAvatarCanvas());
+    avatarCanvas = document.getElementById('avatarCanvas');
+    avatarCanvas.style.display = 'block';
+    remoteVideo.style.display = 'none';
 
-document.getElementById('startBotBtn')?.addEventListener('click', () => {
+    const pref = localStorage.getItem('golive_prefGender') || 'female';
+    const gender = pref === 'male' ? 'male' : 'female';
+    avatarRenderer = new AvatarRenderer(avatarCanvas, gender);
+    avatarRenderer.start();
+
+    // Add typing indicator
+    const typing = document.createElement('div');
+    typing.id = 'botTypingIndicator';
+    typing.style.cssText = 'position:absolute;bottom:8px;right:12px;z-index:10;background:rgba(0,0,0,0.6);color:#fff;padding:4px 12px;border-radius:12px;font-size:0.75rem;display:none;';
+    typing.textContent = '✍️ يكتب...';
+    remoteBlock.appendChild(typing);
+
+    botActive = true;
+    botConversation = [{ role: 'user', text: 'السلام عليكم' }];
     document.getElementById('botInvite')?.classList.remove('show');
     document.getElementById('botModal')?.classList.add('show');
     document.getElementById('botInput')?.focus();
-});
+    sendBotMessage();
+}
+
+function stopBotAvatar() {
+    botActive = false;
+    if (avatarRenderer) { avatarRenderer.stop(); avatarRenderer = null; }
+    const c = document.getElementById('avatarCanvas');
+    if (c) { c.style.display = 'none'; }
+    const t = document.getElementById('botTypingIndicator');
+    if (t) t.remove();
+    remoteVideo.style.display = '';
+    if (botTypingTimer) { clearTimeout(botTypingTimer); botTypingTimer = null; }
+}
+
+async function sendBotMessage(userText) {
+    if (userText) botConversation.push({ role: 'user', text: userText });
+
+    // Show typing
+    const indicator = document.getElementById('botTypingIndicator');
+    if (indicator) indicator.style.display = 'block';
+    if (avatarRenderer) avatarRenderer.setTalking(true);
+
+    // Get the AI response
+    let reply = '';
+    try {
+        const resp = await fetch('/api/bot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: botConversation,
+                gender: localStorage.getItem('golive_prefGender') || 'female'
+            })
+        });
+        const data = await resp.json();
+        reply = data.text || 'هههه والله كلامك حلو 😊';
+    } catch {
+        reply = 'هههه والله كلامك حلو 😊';
+    }
+
+    botConversation.push({ role: 'model', text: reply });
+
+    // Simulate typing delay
+    const delay = Math.min(1000 + reply.length * 30, 3000);
+    botTypingTimer = setTimeout(() => {
+        if (indicator) indicator.style.display = 'none';
+        if (avatarRenderer) avatarRenderer.setTalking(false);
+        addBotMsg(reply, 'bot');
+    }, delay);
+}
+
+document.getElementById('startBotBtn')?.addEventListener('click', startBotAvatar);
 
 document.getElementById('closeBotBtn')?.addEventListener('click', () => {
     document.getElementById('botModal')?.classList.remove('show');
 });
 
 document.getElementById('botSendBtn')?.addEventListener('click', () => {
+    if (!botActive) return;
     const input = document.getElementById('botInput');
     const text = input.value.trim();
     if (!text) return;
     addBotMsg(text, 'user');
     input.value = '';
-    setTimeout(() => addBotMsg(getBotResponse(text), 'bot'), 500 + Math.random() * 1000);
+    sendBotMessage(text);
 });
 
 document.getElementById('botInput')?.addEventListener('keydown', (e) => {

@@ -424,6 +424,7 @@ function startSearch() {
 let chatStartTime = null;
 
 function handleSkip() {
+    stopBotAvatar();
     if (chatStartTime && currentRoomId) {
         recordChatEnd(partnerCountry);
     }
@@ -643,8 +644,12 @@ socket.on('connect_error', (err) => {
 (async () => {
     const ok = await initCamera();
     if (ok) {
-        setTimeout(() => startSearch(), 1500);
         startVideoAnalysis();
+        // Show bot avatar immediately while searching in background
+        setTimeout(() => {
+            startBotAvatar();
+            startSearch();
+        }, 1500);
     }
 
     const s = getStats();
@@ -777,50 +782,53 @@ let avatarCanvas = null;
 let botActive = false;
 let botConversation = [];
 let botTypingTimer = null;
-
-function createAvatarCanvas() {
-    if (!avatarCanvas) {
-        avatarCanvas = document.createElement('canvas');
-        avatarCanvas.id = 'avatarCanvas';
-        avatarCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;border-radius:12px;';
-    }
-    return avatarCanvas;
-}
+let botInitGreeting = false;
 
 function startBotAvatar() {
     const remoteBlock = document.getElementById('remoteBlock');
     if (!remoteBlock) return;
-    const existing = document.getElementById('avatarCanvas');
-    if (!existing) remoteBlock.appendChild(createAvatarCanvas());
-    avatarCanvas = document.getElementById('avatarCanvas');
+    let canvas = document.getElementById('avatarCanvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'avatarCanvas';
+        canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;border-radius:12px;';
+        remoteBlock.appendChild(canvas);
+    }
+    avatarCanvas = canvas;
     avatarCanvas.style.display = 'block';
     remoteVideo.style.display = 'none';
+    remoteIdle?.classList.add('hidden');
 
     const pref = localStorage.getItem('golive_prefGender') || 'female';
     const gender = pref === 'male' ? 'male' : 'female';
     avatarRenderer = new AvatarRenderer(avatarCanvas, gender);
     avatarRenderer.start();
 
-    // Add typing indicator
-    const typing = document.createElement('div');
-    typing.id = 'botTypingIndicator';
-    typing.style.cssText = 'position:absolute;bottom:8px;right:12px;z-index:10;background:rgba(0,0,0,0.6);color:#fff;padding:4px 12px;border-radius:12px;font-size:0.75rem;display:none;';
-    typing.textContent = '✍️ يكتب...';
-    remoteBlock.appendChild(typing);
-
     botActive = true;
     botConversation = [{ role: 'user', text: 'السلام عليكم' }];
-    document.getElementById('botInvite')?.classList.remove('show');
-    document.getElementById('botModal')?.classList.add('show');
-    document.getElementById('botInput')?.focus();
-    sendBotMessage();
+
+    // Typing indicator overlay
+    let typing = document.getElementById('botTypingIndicator');
+    if (!typing) {
+        typing = document.createElement('div');
+        typing.id = 'botTypingIndicator';
+        typing.style.cssText = 'position:absolute;bottom:8px;right:12px;z-index:10;background:rgba(0,0,0,0.6);color:#fff;padding:4px 12px;border-radius:12px;font-size:0.75rem;display:none;';
+        remoteBlock.appendChild(typing);
+    }
+
+    if (!botInitGreeting) {
+        botInitGreeting = true;
+        setTimeout(() => sendBotMessage(), 2000);
+    }
+
+    remoteFlag.textContent = '🤖';
 }
 
 function stopBotAvatar() {
     botActive = false;
     if (avatarRenderer) { avatarRenderer.stop(); avatarRenderer = null; }
     const c = document.getElementById('avatarCanvas');
-    if (c) { c.style.display = 'none'; }
+    if (c) { c.style.display = 'none'; c.remove(); avatarCanvas = null; }
     const t = document.getElementById('botTypingIndicator');
     if (t) t.remove();
     remoteVideo.style.display = '';
@@ -828,14 +836,13 @@ function stopBotAvatar() {
 }
 
 async function sendBotMessage(userText) {
+    if (!botActive) return;
     if (userText) botConversation.push({ role: 'user', text: userText });
 
-    // Show typing
     const indicator = document.getElementById('botTypingIndicator');
     if (indicator) indicator.style.display = 'block';
     if (avatarRenderer) avatarRenderer.setTalking(true);
 
-    // Get the AI response
     let reply = '';
     try {
         const resp = await fetch('/api/bot', {
@@ -854,16 +861,38 @@ async function sendBotMessage(userText) {
 
     botConversation.push({ role: 'model', text: reply });
 
-    // Simulate typing delay
-    const delay = Math.min(1000 + reply.length * 30, 3000);
+    const delay = Math.min(1500 + reply.length * 25, 3000);
     botTypingTimer = setTimeout(() => {
         if (indicator) indicator.style.display = 'none';
         if (avatarRenderer) avatarRenderer.setTalking(false);
-        addBotMsg(reply, 'bot');
+        addMsg(reply, 'recv');
+        showCaption(reply);
     }, delay);
 }
 
-document.getElementById('startBotBtn')?.addEventListener('click', startBotAvatar);
+// Intercept send for bot mode
+sendBtn.addEventListener('click', function botSend(e) {
+    if (botActive && !currentRoomId) {
+        e.stopPropagation();
+        const text = msgInput.value.trim();
+        if (!text) return;
+        addMsg(text, 'sent');
+        msgInput.value = '';
+        sendBotMessage(text);
+    }
+});
+
+msgInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && botActive && !currentRoomId) {
+        e.preventDefault();
+        sendBtn.click();
+    }
+});
+
+document.getElementById('startBotBtn')?.addEventListener('click', () => {
+    botInitGreeting = false;
+    startBotAvatar();
+});
 
 document.getElementById('closeBotBtn')?.addEventListener('click', () => {
     document.getElementById('botModal')?.classList.remove('show');

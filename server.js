@@ -93,12 +93,20 @@ io.on('connection', (socket) => {
         user.gender = filters.gender;
         user.country = filters.country;
         user.prefGender = filters.prefGender;
-        user.lastSearch = Date.now();
 
         console.log(`[findMatch] ${socket.id} gender=${filters.gender} country=${filters.country} pref=${filters.prefGender} queue=${waitingQueue.length}`);
 
-        const queueIdx = waitingQueue.findIndex(q => q.id === socket.id);
-        if (queueIdx > -1) waitingQueue.splice(queueIdx, 1);
+        // Already in queue — update filters without resetting timer
+        const existing = waitingQueue.find(q => q.id === socket.id);
+        if (existing) {
+            existing.gender = filters.gender;
+            existing.country = filters.country;
+            existing.prefGender = filters.prefGender;
+            socket.emit('searching');
+            return;
+        }
+
+        user.lastSearch = Date.now();
 
         let matchIdx = -1;
         for (let i = 0; i < waitingQueue.length; i++) {
@@ -293,7 +301,7 @@ setInterval(() => {
         const entry = waitingQueue[i];
         const user = onlineUsers.get(entry.id);
         if (!user) { waitingQueue.splice(i, 1); continue; }
-        if (!user.lastSearch || Date.now() - user.lastSearch < 3000) continue;
+        if (!user.lastSearch || Date.now() - user.lastSearch < 1000) continue;
         for (let j = i - 1; j >= 0; j--) {
             const candidate = waitingQueue[j];
             const candidateUser = onlineUsers.get(candidate.id);

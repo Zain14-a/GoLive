@@ -394,6 +394,7 @@ function closePeerConnection() {
 
 // ===================== SEARCH =====================
 let searchInterval = null;
+let searchTimer = null;
 
 function startSearch() {
     isSearching = true;
@@ -409,6 +410,15 @@ function startSearch() {
             socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
         }
     }, 5000);
+
+    // Show bot invite after 12s of searching
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        if (isSearching && !currentRoomId) {
+            const invite = document.getElementById('botInvite');
+            if (invite) invite.classList.add('show');
+        }
+    }, 12000);
 }
 
 let chatStartTime = null;
@@ -425,6 +435,13 @@ function handleSkip() {
     chatStartTime = null;
     partnerCountry = null;
     captionBar.style.display = 'none';
+    document.getElementById('botInvite')?.classList.remove('show');
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        if (isSearching && !currentRoomId) {
+            document.getElementById('botInvite')?.classList.add('show');
+        }
+    }, 12000);
 }
 
 function handleStop() {
@@ -440,6 +457,8 @@ function handleStop() {
     chatStartTime = null;
     partnerCountry = null;
     captionBar.style.display = 'none';
+    clearTimeout(searchTimer);
+    document.getElementById('botInvite')?.classList.remove('show');
 }
 
 // ===================== SOCKET EVENTS =====================
@@ -453,6 +472,8 @@ socket.on('searching', () => {
 
 socket.on('matchFound', async (data) => {
     stopBotAvatar();
+    clearTimeout(searchTimer);
+    document.getElementById('botInvite')?.classList.remove('show');
     currentRoomId = data.roomId;
     isSearching = false;
     clearInterval(searchInterval);
@@ -510,8 +531,10 @@ socket.on('partnerDisconnected', () => {
     setStatus(ct('status.disconnected'), 'red');
     addMsg(ct('messages.left'), 'sys');
     captionBar.style.display = 'none';
+    clearTimeout(searchTimer);
     setTimeout(() => {
-        if (document.getElementById('botInvite')) document.getElementById('botInvite').classList.add('show');
+        const invite = document.getElementById('botInvite');
+        if (invite && !currentRoomId) invite.classList.add('show');
     }, 1000);
 });
 
@@ -596,11 +619,14 @@ function startVideoAnalysis() {
 }
 
 // ===================== INIT =====================
-setInterval(() => { fetch('/ping').catch(() => {}); }, 300000);
+setInterval(() => { fetch('/ping').catch(() => {}); }, 60000);
 
 socket.on('connect', () => {
     console.log('Connected to server');
     setStatus(ct('status.connected'), 'green');
+    if (!currentRoomId && !isSearching) {
+        setTimeout(() => startSearch(), 500);
+    }
 });
 
 socket.on('disconnect', () => {

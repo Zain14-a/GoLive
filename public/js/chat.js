@@ -41,6 +41,13 @@ const myGender = urlParams.get('gender') || 'male';
 const myCountry = urlParams.get('country') || 'any';
 const myPrefGender = urlParams.get('prefGender') || 'any';
 
+// Unique per-browser ID to prevent self-matching
+const CLIENT_ID = localStorage.getItem('golive_clientId') || (function() {
+    const id = 'client-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('golive_clientId', id);
+    return id;
+})();
+
 let localStream = null;
 let peerConnection = null;
 let isMuted = false;
@@ -401,13 +408,13 @@ function startSearch() {
     showIdle(ct('messages.searching'));
     setStatus(ct('status.searching'), 'red');
     addMsg(ct('messages.searching'), 'sys');
-    socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
+    socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID });
 
     clearInterval(searchInterval);
     searchInterval = setInterval(() => {
         if (isSearching && !currentRoomId) {
             console.log('Retrying search...');
-            socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender });
+            socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID });
         }
     }, 5000);
 
@@ -440,7 +447,7 @@ function handleSkip() {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
         if (isSearching && !currentRoomId) {
-            document.getElementById('botInvite')?.classList.add('show');
+            startBotAvatar();
         }
     }, 12000);
 }
@@ -533,10 +540,7 @@ socket.on('partnerDisconnected', () => {
     addMsg(ct('messages.left'), 'sys');
     captionBar.style.display = 'none';
     clearTimeout(searchTimer);
-    setTimeout(() => {
-        const invite = document.getElementById('botInvite');
-        if (invite && !currentRoomId) invite.classList.add('show');
-    }, 1000);
+    setTimeout(() => startBotAvatar(), 1000);
 });
 
 socket.on('startSearch', () => startSearch());
@@ -570,9 +574,18 @@ camBtn.addEventListener('click', () => {
     camBtn.classList.toggle('active', isCamOff);
 });
 
+// ===================== MESSAGE SEND =====================
 sendBtn.addEventListener('click', () => {
     const text = msgInput.value.trim();
     if (!text) return;
+
+    // Bot mode — send to bot API
+    if (botActive && !currentRoomId) {
+        addMsg(text, 'sent');
+        msgInput.value = '';
+        sendBotMessage(text);
+        return;
+    }
 
     const moderated = Yeame.moderateOutgoing(text);
     if (moderated === null) return;
@@ -643,14 +656,16 @@ socket.on('connect_error', (err) => {
 
 (async () => {
     const ok = await initCamera();
-    if (ok) {
+    if (!ok) {
+        addMsg(ct('messages.cameraError'), 'sys');
+    } else {
         startVideoAnalysis();
-        // Show bot avatar immediately while searching in background
-        setTimeout(() => {
-            startBotAvatar();
-            startSearch();
-        }, 1500);
     }
+    // Bot always starts — camera or not
+    setTimeout(() => {
+        startBotAvatar();
+        if (ok) startSearch();
+    }, 1500);
 
     const s = getStats();
     pointsDisplay.textContent = s.points;
@@ -870,23 +885,8 @@ async function sendBotMessage(userText) {
     }, delay);
 }
 
-// Intercept send for bot mode
-sendBtn.addEventListener('click', function botSend(e) {
-    if (botActive && !currentRoomId) {
-        e.stopPropagation();
-        const text = msgInput.value.trim();
-        if (!text) return;
-        addMsg(text, 'sent');
-        msgInput.value = '';
-        sendBotMessage(text);
-    }
-});
-
 msgInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && botActive && !currentRoomId) {
-        e.preventDefault();
-        sendBtn.click();
-    }
+    if (e.key === 'Enter') sendBtn.click();
 });
 
 document.getElementById('startBotBtn')?.addEventListener('click', () => {

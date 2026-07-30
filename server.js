@@ -93,8 +93,9 @@ io.on('connection', (socket) => {
         user.gender = filters.gender;
         user.country = filters.country;
         user.prefGender = filters.prefGender;
+        user.clientId = filters.clientId || null;
 
-        console.log(`[findMatch] ${socket.id} gender=${filters.gender} country=${filters.country} pref=${filters.prefGender} queue=${waitingQueue.length}`);
+        console.log(`[findMatch] ${socket.id} gender=${filters.gender} country=${filters.country} pref=${filters.prefGender} queue=${waitingQueue.length} clientId=${user.clientId}`);
 
         // Already in queue — update filters without resetting timer
         const existing = waitingQueue.find(q => q.id === socket.id);
@@ -118,8 +119,9 @@ io.on('connection', (socket) => {
                                 (candidateUser.prefGender === 'any' || candidateUser.prefGender === user.gender);
             const countryMatch = (user.country === 'any' || user.country === candidateUser.country) &&
                                  (candidateUser.country === 'any' || candidateUser.country === user.country);
+            const sameClient = user.clientId && candidateUser.clientId && user.clientId === candidateUser.clientId;
 
-            if (genderMatch && countryMatch) {
+            if (genderMatch && countryMatch && !sameClient) {
                 matchIdx = i;
                 break;
             }
@@ -310,7 +312,8 @@ setInterval(() => {
                                 (candidateUser.prefGender === 'any' || candidateUser.prefGender === user.gender);
             const countryMatch = (user.country === 'any' || user.country === candidateUser.country) &&
                                  (candidateUser.country === 'any' || candidateUser.country === user.country);
-            if (genderMatch && countryMatch) {
+            const sameClient = user.clientId && candidateUser.clientId && user.clientId === candidateUser.clientId;
+            if (genderMatch && countryMatch && !sameClient) {
                 waitingQueue.splice(i, 1);
                 waitingQueue.splice(j, 1);
                 const roomId = uuidv4();

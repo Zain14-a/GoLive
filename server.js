@@ -78,10 +78,9 @@ async function groqBotResponse(messages, gender, apiKey) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
             model: 'qwen/qwen3.6-27b',
-            reasoning_effort: 'none',
             messages: gptMessages,
             temperature: 0.8,
-            max_tokens: 150
+            max_tokens: 600
         })
     });
     if (!resp.ok) {
@@ -92,7 +91,17 @@ async function groqBotResponse(messages, gender, apiKey) {
     const data = await resp.json();
     const raw = data?.choices?.[0]?.message?.content?.trim() || '';
     if (!raw) return fallbackBotResponse(messages, gender);
-    let cleaned = raw.replace(/<think>[\s\S]*?<\/think>/g, ' ').replace(/\s+/g, ' ').trim();
+    let cleaned = raw;
+    if (cleaned.includes('<think>')) {
+        const idx = cleaned.indexOf('</think>');
+        if (idx !== -1) {
+            cleaned = cleaned.slice(idx + 8);
+        } else {
+            cleaned = cleaned.replace(/<think>[\s\S]*$/, '');
+        }
+    }
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    if (!cleaned) return fallbackBotResponse(messages, gender);
     const lastUser = [...messages].reverse().find(m => m.role === 'user')?.text || '';
     if (/[\u0600-\u06FF]/.test(lastUser) && !/[\u0600-\u06FF]/.test(cleaned)) {
         console.error('Groq reply language mismatch (Arabic user, non-Arabic reply), falling back');

@@ -719,6 +719,42 @@ input { font-family: inherit; }
     .phone-appbar { padding: 26px 8px 6px; font-size: 0.7rem; }
     .phone-homebar { width: 70px; bottom: 10px; }
     .phone-back { font-size: 0.9rem; }
+
+    /* Lin page */
+    .phone-lin { padding: 10px; }
+    .lin-header { margin-bottom: 10px; }
+    .lin-logo { width: 34px; height: 34px; border-radius: 10px; font-size: 1rem; margin-bottom: 6px; }
+    .lin-header h3 { font-size: 0.72rem; }
+    .lin-header p { font-size: 0.52rem; }
+    .lin-features { gap: 5px; margin-bottom: 9px; }
+    .lin-feature { gap: 6px; padding: 5px 7px; border-radius: 7px; }
+    .lin-feature svg { width: 14px; height: 14px; }
+    .lin-feature strong { font-size: 0.55rem; }
+    .lin-feature small { font-size: 0.48rem; }
+    .lin-plans { gap: 5px; margin-bottom: 8px; }
+    .lin-plan { border-radius: 7px; padding: 7px 3px; }
+    .plan-badge { font-size: 0.38rem; padding: 1px 5px; top: -6px; }
+    .plan-name { font-size: 0.52rem; margin-top: 2px; margin-bottom: 2px; }
+    .plan-price { font-size: 0.68rem; }
+    .plan-price span { font-size: 0.42rem; }
+    .lin-buy-btn { padding: 6px; font-size: 0.6rem; border-radius: 7px; }
+    .lin-sub { font-size: 0.42rem; margin-top: 5px; }
+
+    /* Settings page */
+    .phone-settings { padding: 6px; }
+    .settings-item { padding: 7px; font-size: 0.58rem; gap: 6px; }
+    .settings-item svg { width: 13px; height: 13px; }
+
+    /* Gallery page */
+    .phone-gallery-lock { padding: 10px; gap: 8px; }
+    .phone-gallery-lock svg { width: 22px; height: 22px; }
+    .phone-gallery-lock p { font-size: 0.58rem; }
+    .pin-dots { gap: 8px; margin: 2px 0 5px; }
+    .pin-dot { width: 10px; height: 10px; }
+    .pin-pad { width: 120px; gap: 5px; }
+    .pin-key { width: 34px; height: 34px; font-size: 0.85rem; }
+    .pin-error { font-size: 0.55rem; min-height: 13px; }
+    .phone-gallery-content { gap: 3px; padding: 5px; }
     .filter-select { font-size: 0.8rem; padding: 6px 10px; }
     .stats-row .stat strong { font-size: 1.2rem; }
     .steps { flex-direction: column; gap: 16px; }
@@ -761,6 +797,41 @@ input { font-family: inherit; }
     .phone-appbar { padding: 20px 6px 4px; font-size: 0.6rem; }
     .phone-homebar { width: 50px; bottom: 6px; }
     .phone-back { font-size: 0.7rem; }
+
+    /* Lin page */
+    .phone-lin { padding: 6px; }
+    .lin-logo { width: 26px; height: 26px; border-radius: 8px; font-size: 0.75rem; margin-bottom: 4px; }
+    .lin-header h3 { font-size: 0.6rem; }
+    .lin-header p { font-size: 0.44rem; }
+    .lin-features { gap: 3px; margin-bottom: 6px; }
+    .lin-feature { gap: 4px; padding: 4px 5px; border-radius: 5px; }
+    .lin-feature svg { width: 11px; height: 11px; }
+    .lin-feature strong { font-size: 0.46rem; }
+    .lin-feature small { font-size: 0.4rem; }
+    .lin-plans { gap: 4px; margin-bottom: 6px; }
+    .lin-plan { padding: 5px 2px; }
+    .plan-badge { font-size: 0.32rem; padding: 0 4px; top: -5px; }
+    .plan-name { font-size: 0.44rem; }
+    .plan-price { font-size: 0.56rem; }
+    .plan-price span { font-size: 0.36rem; }
+    .lin-buy-btn { padding: 5px; font-size: 0.5rem; }
+    .lin-sub { font-size: 0.36rem; margin-top: 3px; }
+
+    /* Settings page */
+    .phone-settings { padding: 4px; }
+    .settings-item { padding: 5px; font-size: 0.48rem; gap: 4px; }
+    .settings-item svg { width: 11px; height: 11px; }
+
+    /* Gallery page */
+    .phone-gallery-lock { padding: 6px; gap: 6px; }
+    .phone-gallery-lock svg { width: 18px; height: 18px; }
+    .phone-gallery-lock p { font-size: 0.5rem; }
+    .pin-dots { gap: 6px; margin: 2px 0 4px; }
+    .pin-dot { width: 8px; height: 8px; }
+    .pin-pad { width: 96px; gap: 4px; }
+    .pin-key { width: 28px; height: 28px; font-size: 0.7rem; }
+    .pin-error { font-size: 0.45rem; min-height: 11px; }
+    .phone-gallery-content { gap: 2px; padding: 3px; }
     .filter-row .filter-group { width: 100%; }
     .filter-select { width: 100%; }
     .chat-topbar .topbar-title { font-size: 0.75rem; }

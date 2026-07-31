@@ -65,7 +65,7 @@ app.post('/api/bot', async (req, res) => {
 
 function buildBotSystemPrompt(gender) {
     const name = gender === 'female' ? 'سارة' : 'أحمد';
-    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Always reply ONLY in Arabic — pure Arabic script, never mix Latin/English letters into Arabic words (write الحمدلله, never الHamdollah). Read the full conversation carefully and answer exactly what the user asked, using correct Arabic word order and grammar. Match the user's dialect naturally. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences maximum.`;
+    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Reply in the SAME LANGUAGE the user writes in (Arabic → reply in Arabic, English → English, French → French, Turkish → Turkish, etc.), matching their dialect and tone. Use correct grammar and natural word order. Read the full conversation carefully and answer exactly what the user asked. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences.`;
 }
 
 async function groqBotResponse(messages, gender, apiKey) {
@@ -77,10 +77,10 @@ async function groqBotResponse(messages, gender, apiKey) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'qwen/qwen3.6-27b',
             messages: gptMessages,
             temperature: 0.8,
-            max_tokens: 120
+            max_tokens: 150
         })
     });
     if (!resp.ok) {
@@ -91,10 +91,10 @@ async function groqBotResponse(messages, gender, apiKey) {
     const data = await resp.json();
     const raw = data?.choices?.[0]?.message?.content?.trim() || '';
     if (!raw) return fallbackBotResponse(messages, gender);
-    const cleaned = raw.replace(/\s+/g, ' ').trim();
-    const latinRatio = (cleaned.replace(/[\u0600-\u06FF\u064B-\u065F\u0660-\u0669\s.,!؟;:"'()\-،]/g, '').length) / Math.max(cleaned.length, 1);
-    if (latinRatio > 0.5) {
-        console.error('Groq reply mostly Latin script, falling back');
+    let cleaned = raw.replace(/<think>[\s\S]*?<\/think>/g, ' ').replace(/\s+/g, ' ').trim();
+    const lastUser = [...messages].reverse().find(m => m.role === 'user')?.text || '';
+    if (/[\u0600-\u06FF]/.test(lastUser) && !/[\u0600-\u06FF]/.test(cleaned)) {
+        console.error('Groq reply language mismatch (Arabic user, non-Arabic reply), falling back');
         return fallbackBotResponse(messages, gender);
     }
     return cleaned;

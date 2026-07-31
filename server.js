@@ -21,76 +21,30 @@ app.get('/ping', (req, res) => res.send('ok'));
 app.post('/api/bot', async (req, res) => {
     try {
         const { messages, gender } = req.body;
-        const GROQ_KEY = process.env.GROQ_API_KEY;
-        if (GROQ_KEY) {
-            const text = await groqBotResponse(messages, gender, GROQ_KEY);
-            return res.json({ text });
+        const providers = [
+            [process.env.OPENROUTER_KEY, openRouterBotResponse],
+            [process.env.GROQ_API_KEY, groqBotResponse],
+            [process.env.OPENAI_KEY, openAIBotResponse],
+            [process.env.GEMINI_KEY, geminiBotResponse]
+        ];
+        for (const [key, fn] of providers) {
+            if (!key) continue;
+            try {
+                const text = await fn(messages, gender, key);
+                if (text) return res.json({ text });
+            } catch (e) {
+                console.error('Bot provider error:', e.message);
+            }
         }
-        const OPENAI_KEY = process.env.OPENAI_KEY;
-        if (OPENAI_KEY) {
-            const text = await openAIBotResponse(messages, gender, OPENAI_KEY);
-            return res.json({ text });
-        }
-        const GEMINI_KEY = process.env.GEMINI_KEY;
-        if (!GEMINI_KEY) {
-            return res.json({ text: fallbackBotResponse(messages, gender) });
-        }
-        const contents = messages.map(m => ({
-            role: m.role === 'user' ? 'user' : 'model',
-            parts: [{ text: m.text }]
-        }));
-        const system = buildBotSystemPrompt(gender);
-        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                systemInstruction: { parts: [{ text: system }] },
-                contents,
-                generationConfig: { temperature: 0.9, maxOutputTokens: 100 }
-            })
-        });
-        if (!resp.ok) {
-            const e = await resp.text();
-            console.error('Gemini API error:', e);
-            return res.json({ text: fallbackBotResponse(messages, gender) });
-        }
-        const data = await resp.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || fallbackBotResponse(messages, gender);
-        res.json({ text });
+        res.json({ text: fallbackBotResponse(messages, gender) });
     } catch (err) {
         console.error('Bot error:', err);
         res.json({ text: fallbackBotResponse(req.body?.messages || [], req.body?.gender) });
     }
 });
 
-function buildBotSystemPrompt(gender) {
-    const name = gender === 'female' ? 'سارة' : 'أحمد';
-    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Reply in the SAME LANGUAGE the user writes in (Arabic → Arabic, English → English, French → French, etc.), matching their dialect and tone. If the user writes Arabic, use ONLY pure Arabic script — never mix Hebrew, Latin, or any other foreign letters into Arabic words. Read the full conversation carefully and answer exactly what the user asked. If the user sends a very short casual message like "يا بنت", "هلا", or "أيوا", respond briefly and naturally like a real person would (e.g. "هلا؟", "أيوا شو في؟", "نعم؟"), without over-explaining. Use correct grammar and natural word order. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences.`;
-}
-
-async function groqBotResponse(messages, gender, apiKey) {
-    const gptMessages = [
-        { role: 'system', content: buildBotSystemPrompt(gender) },
-        ...messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
-    ];
-    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-            model: 'qwen/qwen3.6-27b',
-            messages: gptMessages,
-            temperature: 0.8,
-            max_tokens: 600
-        })
-    });
-    if (!resp.ok) {
-        const e = await resp.text();
-        console.error('Groq API error:', e);
-        return fallbackBotResponse(messages, gender);
-    }
-    const data = await resp.json();
-    const raw = data?.choices?.[0]?.message?.content?.trim() || '';
-    if (!raw) return fallbackBotResponse(messages, gender);
+function extractCleanReply(raw, messages, gender, provider) {
+    if (!raw) return null;
     let cleaned = raw;
     if (cleaned.includes('<think>')) {
         const idx = cleaned.indexOf('</think>');
@@ -101,13 +55,93 @@ async function groqBotResponse(messages, gender, apiKey) {
         }
     }
     cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    if (!cleaned) return fallbackBotResponse(messages, gender);
+    if (!cleaned) return null;
     const lastUser = [...messages].reverse().find(m => m.role === 'user')?.text || '';
     if (/[\u0600-\u06FF]/.test(lastUser) && !/[\u0600-\u06FF]/.test(cleaned)) {
-        console.error('Groq reply language mismatch (Arabic user, non-Arabic reply), falling back');
-        return fallbackBotResponse(messages, gender);
+        console.error(`${provider} reply language mismatch (Arabic user, non-Arabic reply)`);
+        return null;
     }
     return cleaned;
+}
+
+function buildGptMessages(messages, gender) {
+    return [
+        { role: 'system', content: buildBotSystemPrompt(gender) },
+        ...messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
+    ];
+}
+
+function buildBotSystemPrompt(gender) {
+    const name = gender === 'female' ? 'سارة' : 'أحمد';
+    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Reply in the SAME LANGUAGE the user writes in (Arabic → Arabic, English → English, French → French, etc.), matching their dialect and tone. If the user writes Arabic, use ONLY pure Arabic script — never mix Hebrew, Latin, or any other foreign letters into Arabic words. Read the full conversation carefully and answer exactly what the user asked. If the user sends a very short casual message like "يا بنت", "هلا", or "أيوا", respond briefly and naturally like a real person would (e.g. "هلا؟", "أيوا شو في؟", "نعم؟"), without over-explaining. Use correct grammar and natural word order. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences.`;
+}
+
+async function openRouterBotResponse(messages, gender, apiKey) {
+    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': 'https://golive-1-tgzr.onrender.com',
+            'X-Title': 'GoLive'
+        },
+        body: JSON.stringify({
+            model: 'inclusionai/ling-3.0-flash:free',
+            messages: buildGptMessages(messages, gender),
+            temperature: 0.8,
+            max_tokens: 250
+        })
+    });
+    if (!resp.ok) {
+        console.error('OpenRouter API error:', await resp.text());
+        return null;
+    }
+    const data = await resp.json();
+    const raw = data?.choices?.[0]?.message?.content?.trim() || '';
+    return extractCleanReply(raw, messages, gender, 'OpenRouter');
+}
+
+async function groqBotResponse(messages, gender, apiKey) {
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+            model: 'qwen/qwen3.6-27b',
+            messages: buildGptMessages(messages, gender),
+            temperature: 0.8,
+            max_tokens: 600
+        })
+    });
+    if (!resp.ok) {
+        console.error('Groq API error:', await resp.text());
+        return null;
+    }
+    const data = await resp.json();
+    const raw = data?.choices?.[0]?.message?.content?.trim() || '';
+    return extractCleanReply(raw, messages, gender, 'Groq');
+}
+
+async function geminiBotResponse(messages, gender, apiKey) {
+    const contents = messages.map(m => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.text }]
+    }));
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: buildBotSystemPrompt(gender) }] },
+            contents,
+            generationConfig: { temperature: 0.9, maxOutputTokens: 120 }
+        })
+    });
+    if (!resp.ok) {
+        console.error('Gemini API error:', await resp.text());
+        return null;
+    }
+    const data = await resp.json();
+    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    return extractCleanReply(raw, messages, gender, 'Gemini');
 }
 
 async function openAIBotResponse(messages, gender, apiKey) {
@@ -126,12 +160,12 @@ async function openAIBotResponse(messages, gender, apiKey) {
         })
     });
     if (!resp.ok) {
-        const e = await resp.text();
-        console.error('OpenAI API error:', e);
-        return fallbackBotResponse(messages, gender);
+        console.error('OpenAI API error:', await resp.text());
+        return null;
     }
     const data = await resp.json();
-    return data?.choices?.[0]?.message?.content?.trim() || fallbackBotResponse(messages, gender);
+    const raw = data?.choices?.[0]?.message?.content?.trim() || '';
+    return extractCleanReply(raw, messages, gender, 'OpenAI');
 }
 
 function fallbackBotResponse(messages, gender) {

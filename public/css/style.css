@@ -308,6 +308,27 @@ input { font-family: inherit; }
 .settings-item svg { flex-shrink: 0; color: var(--text2); }
 .settings-item:hover { background: rgba(255,255,255,0.03); }
 
+/* Settings language picker */
+.settings-lang-item { cursor: pointer; position: relative; }
+.settings-lang-current {
+    margin-inline-start: auto; font-size: 0.75rem; color: var(--text2);
+}
+.settings-lang-arrow { color: var(--text2); font-size: 0.7rem; margin-inline-start: 4px; transition: transform 0.2s; }
+.settings-lang-list {
+    display: none; flex-direction: column;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; margin: 4px 8px; overflow: hidden;
+}
+.settings-lang-list.open { display: flex; }
+.settings-lang-opt {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; font-size: 0.78rem; color: var(--text);
+    cursor: pointer; border-bottom: 1px solid var(--border);
+}
+.settings-lang-opt:last-child { border-bottom: none; }
+.settings-lang-opt:hover { background: rgba(255,255,255,0.05); }
+.settings-lang-opt.active { background: rgba(99,102,241,0.15); color: var(--accent); font-weight: 700; }
+
 /* Gallery App */
 .phone-gallery-lock {
     flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -744,6 +765,8 @@ input { font-family: inherit; }
     .phone-settings { padding: 6px; }
     .settings-item { padding: 7px; font-size: 0.58rem; gap: 6px; }
     .settings-item svg { width: 13px; height: 13px; }
+    .settings-lang-current { font-size: 0.52rem; }
+    .settings-lang-opt { padding: 6px 9px; font-size: 0.55rem; gap: 5px; }
 
     /* Gallery page */
     .phone-gallery-lock { padding: 10px; gap: 8px; }
@@ -821,6 +844,8 @@ input { font-family: inherit; }
     .phone-settings { padding: 4px; }
     .settings-item { padding: 5px; font-size: 0.48rem; gap: 4px; }
     .settings-item svg { width: 11px; height: 11px; }
+    .settings-lang-current { font-size: 0.44rem; }
+    .settings-lang-opt { padding: 5px 7px; font-size: 0.46rem; gap: 4px; }
 
     /* Gallery page */
     .phone-gallery-lock { padding: 6px; gap: 6px; }

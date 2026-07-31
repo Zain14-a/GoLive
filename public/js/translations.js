@@ -41,6 +41,8 @@ const LANG_DATA = {
             linF4sub: 'بروفايل مميز',
             planMonthly: 'شهري',
             planYearly: 'سنوي',
+            perMonth: '/شهر',
+            perYear: '/سنة',
             planPopular: 'الأكثر شعبية',
             planSave: 'وفّر 40%',
             buyBtn: 'اشترك الآن',
@@ -211,6 +213,8 @@ const LANG_DATA = {
             linF4sub: 'Special profile',
             planMonthly: 'Monthly',
             planYearly: 'Yearly',
+            perMonth: '/month',
+            perYear: '/year',
             planPopular: 'Most Popular',
             planSave: 'Save 40%',
             buyBtn: 'Subscribe Now',
@@ -317,7 +321,7 @@ const LANG_DATA = {
             linF2: 'Öncelikli Bağlantı', linF2sub: 'Daha hızlı bağlan',
             linF3: 'Reklamsız', linF3sub: 'Temiz deneyim',
             linF4: 'Özel Rozet', linF4sub: 'Özel profil',
-            planMonthly: 'Aylık', planYearly: 'Yıllık', planPopular: 'En Popüler', planSave: '%40 Tasarruf',
+            planMonthly: 'Aylık', planYearly: 'Yıllık', perMonth: '/ay', perYear: '/yıl', planPopular: 'En Popüler', planSave: '%40 Tasarruf',
             buyBtn: 'Şimdi Abone Ol', planTrial: '7 gün ücretsiz deneme. İstediğin zaman iptal et.',
             myAccount: 'Hesabım', notifications: 'Bildirimler', language: 'Dil', privacy: 'Gizlilik', about: 'Hakkında',
             galleryLock: 'PIN girin', galleryEmpty: 'Henüz fotoğraf yok', passError: 'Yanlış PIN'
@@ -356,7 +360,7 @@ const LANG_DATA = {
             linF2: 'Connexion prioritaire', linF2sub: 'Connectez-vous plus vite',
             linF3: 'Sans publicité', linF3sub: 'Expérience propre',
             linF4: 'Badge premium', linF4sub: 'Profil spécial',
-            planMonthly: 'Mensuel', planYearly: 'Annuel', planPopular: 'Le plus populaire', planSave: 'Économisez 40%',
+            planMonthly: 'Mensuel', planYearly: 'Annuel', perMonth: '/mois', perYear: '/an', planPopular: 'Le plus populaire', planSave: 'Économisez 40%',
             buyBtn: 'S\'abonner', planTrial: 'Essai gratuit de 7 jours. Annulez à tout moment.',
             myAccount: 'Mon compte', notifications: 'Notifications', language: 'Langue', privacy: 'Confidentialité', about: 'À propos',
             galleryLock: 'Entrez le PIN', galleryEmpty: 'Pas encore de photos', passError: 'PIN incorrect'
@@ -395,7 +399,7 @@ const LANG_DATA = {
             linF2: 'Conexión prioritaria', linF2sub: 'Conecta más rápido',
             linF3: 'Sin anuncios', linF3sub: 'Experiencia limpia',
             linF4: 'Insignia premium', linF4sub: 'Perfil especial',
-            planMonthly: 'Mensual', planYearly: 'Anual', planPopular: 'Más popular', planSave: 'Ahorra 40%',
+            planMonthly: 'Mensual', planYearly: 'Anual', perMonth: '/mes', perYear: '/año', planPopular: 'Más popular', planSave: 'Ahorra 40%',
             buyBtn: 'Suscribirse', planTrial: 'Prueba gratuita de 7 días. Cancela en cualquier momento.',
             myAccount: 'Mi cuenta', notifications: 'Notificaciones', language: 'Idioma', privacy: 'Privacidad', about: 'Acerca de',
             galleryLock: 'Ingresa el PIN', galleryEmpty: 'Sin fotos aún', passError: 'PIN incorrecto'
@@ -434,7 +438,7 @@ const LANG_DATA = {
             linF2: 'Conexão prioritária', linF2sub: 'Conecte mais rápido',
             linF3: 'Sem anúncios', linF3sub: 'Experiência limpa',
             linF4: 'Distintivo premium', linF4sub: 'Perfil especial',
-            planMonthly: 'Mensal', planYearly: 'Anual', planPopular: 'Mais popular', planSave: 'Economize 40%',
+            planMonthly: 'Mensal', planYearly: 'Anual', perMonth: '/mês', perYear: '/ano', planPopular: 'Mais popular', planSave: 'Economize 40%',
             buyBtn: 'Assinar agora', planTrial: 'Teste gratuito de 7 dias. Cancele a qualquer momento.',
             myAccount: 'Minha conta', notifications: 'Notificações', language: 'Idioma', privacy: 'Privacidade', about: 'Sobre',
             galleryLock: 'Digite o PIN', galleryEmpty: 'Sem fotos ainda', passError: 'PIN incorreto'
@@ -473,7 +477,7 @@ const LANG_DATA = {
             linF2: 'प्राथमिकता कनेक्शन', linF2sub: 'तेज़ी से कनेक्ट करें',
             linF3: 'विज्ञापन मुक्त', linF3sub: 'स्वच्छ अनुभव',
             linF4: 'प्रीमियम बैज', linF4sub: 'विशेष प्रोफ़ाइल',
-            planMonthly: 'मासिक', planYearly: 'वार्षिक', planPopular: 'सबसे लोकप्रिय', planSave: '40% बचाएं',
+            planMonthly: 'मासिक', planYearly: 'वार्षिक', perMonth: '/महीना', perYear: '/वर्ष', planPopular: 'सबसे लोकप्रिय', planSave: '40% बचाएं',
             buyBtn: 'अभी सदस्यता लें', planTrial: '7-दिन का निःशुल्क परीक्षण। कभी भी रद्द करें।',
             myAccount: 'मेरा खाता', notifications: 'सूचनाएं', language: 'भाषा', privacy: 'गोपनीयता', about: 'के बारे में',
             galleryLock: 'PIN दर्ज करें', galleryEmpty: 'अभी तक कोई फ़ोटो नहीं', passError: 'गलत PIN'
@@ -512,7 +516,7 @@ const LANG_DATA = {
             linF2: 'ترجیحی رابطہ', linF2sub: 'تیزی سے جڑیں',
             linF3: 'اشتہارات کے بغیر', linF3sub: 'صاف تجربہ',
             linF4: 'پریمیم بیج', linF4sub: 'خصوصی پروفائل',
-            planMonthly: 'ماہانہ', planYearly: 'سالانہ', planPopular: 'سب سے مقبول', planSave: '40% بچائیں',
+            planMonthly: 'ماہانہ', planYearly: 'سالانہ', perMonth: '/ماہ', perYear: '/سال', planPopular: 'سب سے مقبول', planSave: '40% بچائیں',
             buyBtn: 'ابھی سبسکرائب کریں', planTrial: '7 دن کا مفت ٹرائل۔ جب چاہے منسو کریں۔',
             myAccount: 'میرا اکاؤنٹ', notifications: 'اطلاعات', language: 'زبان', privacy: 'رازداری', about: 'کے بارے میں',
             galleryLock: 'PIN درج کریں', galleryEmpty: 'ابھی تک کوئی تصاویر نہیں', passError: 'غلط PIN'

@@ -2,8 +2,26 @@ const Lang = (() => {
     const LANG_KEY = 'golive_lang';
     const defaultLang = 'ar';
 
+    function detectFromDevice() {
+        const nav = navigator.language || navigator.userLanguage || '';
+        const base = nav.split('-')[0].toLowerCase();
+        if (base === 'ar') return 'ar';
+        if (base === 'en') return 'en';
+        if (base === 'tr') return 'tr';
+        if (base === 'fr') return 'fr';
+        if (base === 'es') return 'es';
+        if (base === 'pt') return 'pt';
+        if (base === 'hi') return 'hi';
+        if (base === 'ur') return 'ur';
+        return null;
+    }
+
     function getCurrent() {
-        return localStorage.getItem(LANG_KEY) || defaultLang;
+        const saved = localStorage.getItem(LANG_KEY);
+        if (saved && LANG_DATA[saved]) return saved;
+        const detected = detectFromDevice();
+        if (detected) return detected;
+        return defaultLang;
     }
 
     function set(lang) {
@@ -11,6 +29,8 @@ const Lang = (() => {
         apply(lang);
         document.documentElement.dir = LANG_DATA[lang]?.dir || 'rtl';
         document.documentElement.lang = lang;
+        syncSettingsUi();
+        syncSelectorButtons();
     }
 
     function t(path) {
@@ -126,6 +146,8 @@ const Lang = (() => {
                 dropdown.style.display = 'none';
                 btn.querySelector('#langToggle').innerHTML = `${l.flag} ${l.label}`;
 
+                syncSettingsUi();
+
                 const countrySel = document.getElementById('countrySel');
                 if (countrySel) buildCountrySelect(countrySel);
 
@@ -149,5 +171,59 @@ const Lang = (() => {
         });
     }
 
-    return { getCurrent, set, t, apply, buildCountrySelect, createLangSelector };
+    function buildSettingsLangList() {
+        const list = document.getElementById('settingsLangList');
+        const item = document.getElementById('settingsLangItem');
+        if (!list || !item) return;
+
+        list.innerHTML = '';
+        Object.keys(LANG_DATA).forEach(code => {
+            const l = LANG_DATA[code];
+            const opt = document.createElement('div');
+            opt.className = 'settings-lang-opt' + (code === getCurrent() ? ' active' : '');
+            opt.innerHTML = `${l.flag} ${l.label}`;
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                set(code);
+                list.classList.remove('open');
+                window.dispatchEvent(new Event('langChanged'));
+                const countrySel = document.getElementById('countrySel');
+                if (countrySel) buildCountrySelect(countrySel);
+            });
+            list.appendChild(opt);
+        });
+
+        if (!item.dataset.langBound) {
+            item.dataset.langBound = '1';
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                list.classList.toggle('open');
+            });
+        }
+
+        syncSettingsUi();
+    }
+
+    function syncSettingsUi() {
+        const currentEl = document.getElementById('settingsLangCurrent');
+        if (currentEl) {
+            const l = LANG_DATA[getCurrent()];
+            currentEl.textContent = `${l.flag} ${l.label}`;
+        }
+        document.querySelectorAll('.settings-lang-opt').forEach(o => {
+            o.classList.toggle('active', o.textContent.includes(LANG_DATA[getCurrent()]?.label));
+        });
+    }
+
+    function syncSelectorButtons() {
+        document.querySelectorAll('.lang-selector').forEach(sel => {
+            const btn = sel.querySelector('.lang-btn');
+            if (btn) {
+                const l = LANG_DATA[getCurrent()];
+                btn.innerHTML = `${l.flag} ${l.label}`;
+            }
+        });
+    }
+
+    return { getCurrent, set, t, apply, buildCountrySelect, createLangSelector, buildSettingsLangList, syncSettingsUi, syncSelectorButtons };
 })();

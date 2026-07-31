@@ -20,6 +20,13 @@ document.documentElement.lang = Lang.getCurrent();
 Lang.apply();
 Lang.buildCountrySelect(countrySel);
 Lang.createLangSelector(document.getElementById('langContainer'));
+Lang.buildSettingsLangList();
+
+// Rebuild language list when page language changes
+window.addEventListener('langChanged', () => {
+    Lang.buildSettingsLangList();
+    updatePhoneClock();
+});
 
 // Phone image cycling
 if (mockNextBtn) {
@@ -126,11 +133,14 @@ function updatePhoneClock() {
     const dateEl = document.getElementById('phoneDate');
     if (timeEl) timeEl.textContent = h + ':' + m;
     const lang = Lang.getCurrent();
-    if (lang === 'en') {
-        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()];
-    } else {
+    const localeMap = { ar: 'ar', en: 'en', tr: 'tr', fr: 'fr', es: 'es', pt: 'pt', hi: 'hi', ur: 'ur' };
+    try {
+        if (dateEl) {
+            dateEl.textContent = new Intl.DateTimeFormat(localeMap[lang] || 'ar', {
+                weekday: 'long', day: 'numeric', month: 'long'
+            }).format(now);
+        }
+    } catch (e) {
         const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
         if (dateEl) dateEl.textContent = days[now.getDay()] + '، ' + now.getDate() + ' ' + months[now.getMonth()];

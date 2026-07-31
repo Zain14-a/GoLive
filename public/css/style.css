@@ -198,6 +198,7 @@ input { font-family: inherit; }
     display: flex; align-items: center; justify-content: center;
     font-size: 1.4rem; font-weight: 700; color: #fff;
 }
+.app-icon svg { width: 60%; height: 60%; }
 .golive-icon { background: linear-gradient(135deg, #ff3b5c, #ff6b81); font-size: 1.6rem; }
 .lin-icon { background: linear-gradient(135deg, #6366f1, #818cf8); font-size: 1.5rem; font-family: Georgia, serif; font-style: italic; }
 .settings-icon { background: rgba(255,255,255,0.15); font-size: 1.5rem; }
@@ -671,6 +672,16 @@ input { font-family: inherit; }
     .hero-content p { font-size: 0.95rem; }
     .stats-row { justify-content: center; }
     .phone-mockup { width: 220px; height: 440px; }
+    .phone-notch { width: 70px; height: 18px; }
+    .phone-time { font-size: 2.2rem; padding-top: 44px; }
+    .phone-date { font-size: 0.7rem; }
+    .phone-apps { gap: 12px; padding: 30px 20px 14px; }
+    .phone-app { gap: 4px; }
+    .app-icon { width: 42px; height: 42px; border-radius: 12px; font-size: 1.1rem; }
+    .phone-app span { font-size: 0.55rem; }
+    .phone-dock { gap: 14px; padding: 10px 18px; margin: 0 12px; }
+    .dock-app .app-icon.small { width: 32px; height: 32px; border-radius: 8px; }
+    .phone-appbar { padding: 34px 12px 8px; font-size: 0.8rem; }
     .btn-main { padding: 14px 34px; font-size: 1rem; }
     .age-check { display: flex; justify-content: center; }
     .age-check label { justify-content: center; }
@@ -696,6 +707,18 @@ input { font-family: inherit; }
     .hero-content h1 { font-size: 1.5rem; }
     .btn-main { padding: 12px 24px; font-size: 0.9rem; }
     .phone-mockup { width: 170px; height: 350px; }
+    .phone-notch { width: 56px; height: 14px; }
+    .phone-time { font-size: 1.6rem; padding-top: 28px; }
+    .phone-date { font-size: 0.6rem; }
+    .phone-apps { gap: 8px; padding: 22px 14px 10px; }
+    .phone-app { gap: 3px; }
+    .app-icon { width: 32px; height: 32px; border-radius: 9px; font-size: 0.85rem; }
+    .phone-app span { font-size: 0.48rem; }
+    .phone-dock { gap: 10px; padding: 8px 12px; margin: 0 10px; border-radius: 14px; }
+    .dock-app .app-icon.small { width: 24px; height: 24px; border-radius: 6px; }
+    .phone-appbar { padding: 26px 8px 6px; font-size: 0.7rem; }
+    .phone-homebar { width: 70px; bottom: 10px; }
+    .phone-back { font-size: 0.9rem; }
     .filter-select { font-size: 0.8rem; padding: 6px 10px; }
     .stats-row .stat strong { font-size: 1.2rem; }
     .steps { flex-direction: column; gap: 16px; }
@@ -726,6 +749,18 @@ input { font-family: inherit; }
     .nav-logo { font-size: 0.95rem; }
     .hero-content h1 { font-size: 1.3rem; }
     .phone-mockup { width: 140px; height: 290px; }
+    .phone-notch { width: 44px; height: 12px; }
+    .phone-time { font-size: 1.2rem; padding-top: 18px; }
+    .phone-date { font-size: 0.5rem; }
+    .phone-apps { gap: 5px; padding: 16px 10px 8px; }
+    .phone-app { gap: 2px; }
+    .app-icon { width: 26px; height: 26px; border-radius: 7px; font-size: 0.7rem; }
+    .phone-app span { font-size: 0.4rem; }
+    .phone-dock { gap: 6px; padding: 5px 8px; margin: 0 8px; border-radius: 10px; }
+    .dock-app .app-icon.small { width: 20px; height: 20px; border-radius: 5px; }
+    .phone-appbar { padding: 20px 6px 4px; font-size: 0.6rem; }
+    .phone-homebar { width: 50px; bottom: 6px; }
+    .phone-back { font-size: 0.7rem; }
     .filter-row .filter-group { width: 100%; }
     .filter-select { width: 100%; }
     .chat-topbar .topbar-title { font-size: 0.75rem; }

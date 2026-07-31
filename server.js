@@ -64,7 +64,8 @@ app.post('/api/bot', async (req, res) => {
 });
 
 function buildBotSystemPrompt(gender) {
-    return `You are a ${gender === 'female' ? 'female' : 'male'} video chat assistant named ${gender === 'female' ? 'Eve' : 'Adam'}. You speak Arabic naturally and casually. Your personality is friendly, funny, and warm. Keep responses short (1-2 sentences). You are pretending to be a real person on a random video chat. Never say you are an AI. Act natural like a normal person. Speak in Arabic dialect (Gulf/Arabic mix).`;
+    const name = gender === 'female' ? 'سارة' : 'أحمد';
+    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Always reply ONLY in Arabic — pure Arabic script, never mix Latin/English letters into Arabic words (write الحمدلله, never الHamdollah). Read the full conversation carefully and answer exactly what the user asked, using correct Arabic word order and grammar. Match the user's dialect naturally. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences maximum.`;
 }
 
 async function groqBotResponse(messages, gender, apiKey) {
@@ -78,7 +79,7 @@ async function groqBotResponse(messages, gender, apiKey) {
         body: JSON.stringify({
             model: 'llama-3.3-70b-versatile',
             messages: gptMessages,
-            temperature: 0.9,
+            temperature: 0.8,
             max_tokens: 120
         })
     });
@@ -88,7 +89,15 @@ async function groqBotResponse(messages, gender, apiKey) {
         return fallbackBotResponse(messages, gender);
     }
     const data = await resp.json();
-    return data?.choices?.[0]?.message?.content?.trim() || fallbackBotResponse(messages, gender);
+    const raw = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!raw) return fallbackBotResponse(messages, gender);
+    const cleaned = raw.replace(/\s+/g, ' ').trim();
+    const latinRatio = (cleaned.replace(/[\u0600-\u06FF\u064B-\u065F\u0660-\u0669\s.,!؟;:"'()\-،]/g, '').length) / Math.max(cleaned.length, 1);
+    if (latinRatio > 0.5) {
+        console.error('Groq reply mostly Latin script, falling back');
+        return fallbackBotResponse(messages, gender);
+    }
+    return cleaned;
 }
 
 async function openAIBotResponse(messages, gender, apiKey) {

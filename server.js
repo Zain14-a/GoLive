@@ -23,7 +23,7 @@ app.post('/api/bot', async (req, res) => {
         const { messages, gender } = req.body;
         const GEMINI_KEY = process.env.GEMINI_KEY;
         if (!GEMINI_KEY) {
-            return res.json({ text: fallbackBotResponse(messages) });
+            return res.json({ text: fallbackBotResponse(messages, gender) });
         }
         const contents = messages.map(m => ({
             role: m.role === 'user' ? 'user' : 'model',
@@ -42,32 +42,128 @@ app.post('/api/bot', async (req, res) => {
         if (!resp.ok) {
             const e = await resp.text();
             console.error('Gemini API error:', e);
-            return res.json({ text: fallbackBotResponse(messages) });
+            return res.json({ text: fallbackBotResponse(messages, gender) });
         }
         const data = await resp.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || fallbackBotResponse(messages);
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || fallbackBotResponse(messages, gender);
         res.json({ text });
     } catch (err) {
         console.error('Bot error:', err);
-        res.json({ text: fallbackBotResponse(req.body?.messages || []) });
+        res.json({ text: fallbackBotResponse(req.body?.messages || [], req.body?.gender) });
     }
 });
 
-function fallbackBotResponse(messages) {
-    const last = messages?.[messages.length - 1]?.text?.toLowerCase() || '';
-    const arr = [
-        'هههه صج؟ 😂', 'والله شي جميل!', 'ايوا عادي، وانت شو رأيك؟',
-        'مش عارفة صراحة، شو تقترح؟', 'هههه حلو الكلام دا!',
-        'اي والله، أنا مثلك تماماً', 'عنجد؟ حلوه!', 'طيب شو أخبارك اليوم؟',
-        'حلو سؤال! بس أنا جايعة شوي 😅', 'واو، أنا كمان بحب هالشي!'
-    ];
-    if (/مرحبا|هلا|السلام/i.test(last)) return 'مرحبا! كيفك؟ 😊';
-    if (/كيفك|شلونك|كيف حال/i.test(last)) return 'الحمد لله تمام، وانت شو أخبارك؟';
-    if (/اسمك|شو اسم/i.test(last)) return 'اسمي Adam 😎 وانت؟';
-    if (/وين|من وين/i.test(last)) return 'أنا من المنطقة العربية، وانت؟';
-    if (/شو بتعمل|بتشتغل/i.test(last)) return 'أنا أدرس حالياً، وانت شو بتسوي؟';
-    if (/باي|سلام|خلاص/i.test(last)) return 'الله معاك، كان حلو اللقاء! 👋';
-    return arr[Math.floor(Math.random() * arr.length)];
+function fallbackBotResponse(messages, gender) {
+    const isGirl = gender === 'female';
+    const name = isGirl ? 'سارة' : 'أحمد';
+    const last = (messages?.[messages.length - 1]?.text || '').toLowerCase();
+    const prev = (messages?.[messages.length - 2]?.text || '').toLowerCase();
+
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Greetings
+    if (/^(مرحبا|هلا|السلام|أهلا|اهلا|مرحبتين|السلام عليكم|هاي|هاي )/.test(last))
+        return pick(['مرحبا! كيفك اليوم؟ 😊', `أهلا وسهلا! أنا ${name}، وأنت؟`, 'مرحبتين! شو أخبارك؟']);
+
+    // How are you
+    if (/كيفك|كيف حال|شلونك|ازيك|عامل ايه|شو الاخبار|كيف صحتك/.test(last))
+        return pick(['الحمد لله تمام وأنا مبسوطة، وأنت شو أخبارك؟', 'تمام الحمد لله! متحمس أتعرف عليك أكثر، كيفك؟', 'كويسة، شكراً لسؤالك! وأنت كيفك اليوم؟']);
+
+    // Name
+    if (/اسمك|شو اسمك|ما اسمك|منو انت|وش اسمك|من تكون/.test(last))
+        return `اسمي ${name} 😊 وأنت شو اسمك؟`;
+
+    // Age
+    if (/كم عمر|عمرك|شو عمر|كم سنة/.test(last))
+        return pick(['عمري 21 سنة، وأنت؟', '21 سنة 😄 وشو عمرك؟', 'صغير السن بس كبير بالعقل 😎']);
+
+    // Where are you from
+    if (/من وين|منين|وين بلدك|بلدك|من أي دولة|من أين/.test(last))
+        return pick(['أنا من الأردن 🇯🇴 وأنت من وين؟', 'من فلسطين 🇵🇸 وأنت شو بلدك؟', 'أنا من المنطقة العربية وأنت من وين؟']);
+
+    // What are you doing / work / study
+    if (/بتشتغل|شو تشتغل|شو عملك|بتدرس|عامل ايه دلوقتي|شو بتسوي|شو بتحكي|بتروح فين|وين رايح/.test(last))
+        return pick(['أنا طالبة جامعية 💻 وبتعلم برمجة، وأنت؟', 'أشتغل في مجال التصميم، وأنت شو بتحب تشتغل؟', 'لسة بدرس وأستمتع بالحياة 😄 وأنت؟']);
+
+    // Hobbies
+    if (/هواياتك|بتحب تشوف|شو بتحب|اهتمامات|مزاجك|بنحب ايه|بتلعب|مشاهدة/.test(last))
+        return pick(['بحب أسمع موسيقى وأشاهد الأفلام 🎬 وأنت؟', 'بحب السفر والأكل الجديد 🍕 وشو أنت؟', 'بحب كرة القدم وأتابع المباريات ⚽']);
+
+    // What do you like about site
+    if (/الموقع|التطبيق|جوليف|golive|شو هذا|شنو هذا/.test(last))
+        return 'هذا تطبيق محادثة فيديو رائع! بتقدر تعرف ناس من كل العالم 🌍';
+
+    // Compliments
+    if (/حلو|جميل|وسيم|مش قمر|شكلها حلو|بتحبني/.test(last))
+        return pick(['هههه شكراً! كلامك حلو 😊', 'تسلم! وأنت كمان شخص لطيف', 'هههه وقّعت على قلبي 😄']);
+
+    // Love
+    if (/حب|بحبك|عشق|غرام|احبك/.test(last))
+        return pick(['هههه من أول محادثة! 😄 خلينا نتعرف أكثر', 'أنت سريع! 😂 بس كلامك حلو', 'تسلم، بس خذها ببساطة هههه 😊']);
+
+    // Food
+    if (/اكل|جوعان|طعام|شو تاكل|مطعم|قهوة|شاي/.test(last))
+        return pick(['تسلم تسأل، أنا جايعة شوي 😅 وشو بتحب تاكل؟', 'بحب المنسف! من أشهر الأكلات العربية 🍽️ وأنت؟', 'قهوة الصبح شي لا يُقاوم ☕']);
+
+    // Travel
+    if (/سفر|سافر|سافرت|بسافر|دولة حلم/.test(last))
+        return pick(['بحلم أزور باريس وتركيا! وأنت وين حلمك؟ ✈️', 'أكثر شي بحبه بالسفر التعرف على ناس جديدة!', 'الأردن والبحر الميت تجربة رهيبة، جربته؟']);
+
+    // Music
+    if (/اغاني|موسيقى|مطرب|أغنية|غناء/.test(last))
+        return pick(['بحب أغاني أم كلثوم والراب الحديث 🎵 وأنت؟', 'فهد العبدالله الصوت الأجمل! وشو تحب تسمع؟', 'الموسيقى بتغيّر المزاج، إيش مزاجك اليوم؟']);
+
+    // Sports
+    if (/كرة|مباراة|فريق|نادي|رياضة|مباراة/.test(last))
+        return pick(['أنا مش متابعة كثير، بس بحب مشاهدة المونديال ⚽', 'أهلاً، أي نادي بتشجع؟', 'الرياضة صحة وحيوية!']);
+
+    // Movies
+    if (/فيلم|مسلسل|دراما|سينما|أفلام|سهرة/.test(last))
+        return pick(['آخر فيلم حلو شفته كان أكشن 🎬 وشو تحب تشوف؟', 'بحب الدراما التركية جداً!', 'الأفلام الوثائقية ممتعة جداً']);
+
+    // Time
+    if (/الساعة|كم الوقت|وش الوقت/.test(last))
+        return pick(['حلو السؤال! بس خلينا نكمل كلامنا 😄', 'ما عندي فكرة بالوقت هسا، أنا مستمتعة معك']);
+
+    // Yes/No generic
+    if (/^اي|^ايه|^نعم|^اه|^اكيد|^أكيد|^صح/.test(last))
+        return pick(['صحيح! أنا موافقة معك', 'هههه حلو، طيب شو كمان؟', 'تمام! وماذا بعد؟']);
+
+    if (/^لا|^لأ|^لاء/.test(last))
+        return pick(['وليش؟ حبيت أعرف رأيك', 'معلش، كل شخص وذوقه 😊', 'هههه تمام، فاهمك']);
+
+    // Why
+    if (/^ليش|^لما|^علاشان|^لماذا|^وليش/.test(last))
+        return pick(['سؤال حلو! شو رأيك أنت؟ 🤔', 'بصراحة الموضوع معقد 😅 بس خلينا نتكلم عن شي ثاني', 'هسا الموضوع طويل، نكمل عشان نتشارك وقتنا']);
+
+    // Thanks
+    if (/شكرا|تسلم|يعطيك|ممنون/.test(last))
+        return 'العفو! أنت كمان شخص جميل 😊 تسلم';
+
+    // Bye
+    if (/باي|مع السلامة|في امان الله|خلاص نروح|تصبح|وداعا/.test(last))
+        return 'الله معاك، كان حلو اللقاء! نرجع نتحدث قريباً 👋';
+
+    // Swearing
+    if (/كس|أمك|شرموط|خرة|زق|عاهة|حقير|تافه/.test(last))
+        return 'رجاءً كلام حلو نحن هنا عشان نستمتع 😊';
+
+    // Question detection fallback
+    if (last.includes('?')) return pick([
+        'سؤال حلو! بصراحة شو رأيك أنت؟ 🤔',
+        'هههه ما عندي إجابة أكيدة، بس رأيك يهمني، شو بتظن؟',
+        'موضوع مثير للاهتمام! حبيت أعرف أكتر عنك في هذا الموضوع'
+    ]);
+
+    // Generic
+    return pick([
+        'أيوا، يعني شي حلو! وماذا بعد؟ 😊',
+        'هههه كلامك مسلي! كمّل، أنا أسمعك',
+        'صج؟ والله شي يفرح، كمّللي أكثر',
+        'شخصيتك واضحة ومميزة! شو بتحب نتكلم فيه؟',
+        'أنا مستمتعة معك، تعال اشرحلي أكثر',
+        'شي جميل! أنا حابة أتعرف عليك أكثر، شو أخبارك؟'
+    ]);
 }
 
 const onlineUsers = new Map();

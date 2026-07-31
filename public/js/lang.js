@@ -13,6 +13,9 @@ const Lang = (() => {
         if (base === 'pt') return 'pt';
         if (base === 'hi') return 'hi';
         if (base === 'ur') return 'ur';
+        if (base === 'he') return 'he';
+        if (base === 'ru') return 'ru';
+        if (base === 'de') return 'de';
         return null;
     }
 
@@ -95,8 +98,6 @@ const Lang = (() => {
         const countries = data.countries || {};
         const groups = data.groups || {};
 
-        if (Object.keys(countries).length === 0) return false;
-
         const regionOrder = [
             { key: 'mideast', codes: ['JO','SA','AE','EG','IQ','KW','QA','BH','OM','LB','SY','PS','TR','IL','IR','CY'] },
             { key: 'africa', codes: ['MA','DZ','TN','LY','SD','YE','MR','SO','DJ','KM','TD','NG','KE','ET','GH','ZA','TZ','UG','RW','CM','SN','CI','ML','BF','NE','GN','BJ','TG','CF','CG','CD','GA','GQ','AO','ZM','ZW','BW','NA','MZ','MG','MW','SC','MU','SS','LR','SL','GM','CV','BI'] },
@@ -112,8 +113,9 @@ const Lang = (() => {
             const regionLabel = groups[region.key] || region.key;
             html += `<optgroup label="${regionLabel}">`;
             region.codes.forEach(code => {
-                if (countries[code]) {
-                    html += `<option value="${code}">${countries[code]}</option>`;
+                const name = countries[code] || FALLBACK_COUNTRIES[code];
+                if (name) {
+                    html += `<option value="${code}">${name}</option>`;
                 }
             });
             html += `</optgroup>`;

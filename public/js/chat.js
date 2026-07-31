@@ -60,12 +60,19 @@ let activeParticles = [];
 let partnerCountry = null;
 
 function ct(key) {
-    const lang = Lang.getCurrent();
-    const data = LANG_DATA[lang] || LANG_DATA['ar'];
     const keys = ('chat.' + key).split('.');
-    let val = data;
-    for (const k of keys) { if (val && typeof val === 'object') val = val[k]; else return key; }
-    return val || key;
+    for (const lang of [Lang.getCurrent(), 'en', 'ar']) {
+        const data = LANG_DATA[lang];
+        if (!data) continue;
+        let val = data;
+        let ok = true;
+        for (const k of keys) {
+            if (val && typeof val === 'object') val = val[k];
+            else { ok = false; break; }
+        }
+        if (ok && val !== undefined && val !== null) return val;
+    }
+    return key;
 }
 
 const COUNTRY_FLAGS = {
@@ -88,7 +95,10 @@ const COUNTRY_FLAGS = {
 };
 
 function getCountryName(code) {
-    return ct('messages.countries.' + code) || code;
+    const cur = LANG_DATA[Lang.getCurrent()];
+    if (cur?.chat?.messages?.countries?.[code]) return cur.chat.messages.countries[code];
+    if (cur?.countries?.[code]) return cur.countries[code];
+    return FALLBACK_COUNTRIES[code] || code;
 }
 
 const RTC_CONFIG = {

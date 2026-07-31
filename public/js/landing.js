@@ -133,7 +133,7 @@ function updatePhoneClock() {
     const dateEl = document.getElementById('phoneDate');
     if (timeEl) timeEl.textContent = h + ':' + m;
     const lang = Lang.getCurrent();
-    const localeMap = { ar: 'ar', en: 'en', tr: 'tr', fr: 'fr', es: 'es', pt: 'pt', hi: 'hi', ur: 'ur' };
+    const localeMap = { ar: 'ar', en: 'en', tr: 'tr', fr: 'fr', es: 'es', pt: 'pt', hi: 'hi', ur: 'ur', he: 'he', ru: 'ru', de: 'de' };
     try {
         if (dateEl) {
             dateEl.textContent = new Intl.DateTimeFormat(localeMap[lang] || 'ar', {

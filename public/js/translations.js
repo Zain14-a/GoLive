@@ -1,3 +1,59 @@
+const FALLBACK_COUNTRIES = {
+    JO: '🇯🇴 Jordan', SA: '🇸🇦 Saudi Arabia', AE: '🇦🇪 UAE', EG: '🇪🇬 Egypt',
+    IQ: '🇮🇶 Iraq', KW: '🇰🇼 Kuwait', QA: '🇶🇦 Qatar', BH: '🇧🇭 Bahrain',
+    OM: '🇴🇲 Oman', LB: '🇱🇧 Lebanon', SY: '🇸🇾 Syria', PS: '🇵🇸 Palestine',
+    TR: '🇹🇷 Turkey', IL: '🇮🇱 Israel', IR: '🇮🇷 Iran', CY: '🇨🇾 Cyprus',
+    MA: '🇲🇦 Morocco', DZ: '🇩🇿 Algeria', TN: '🇹🇳 Tunisia', LY: '🇱🇾 Libya',
+    SD: '🇸🇩 Sudan', YE: '🇾🇪 Yemen', MR: '🇲🇷 Mauritania', SO: '🇸🇴 Somalia',
+    DJ: '🇩🇯 Djibouti', KM: '🇰🇲 Comoros', TD: '🇹🇩 Chad', NG: '🇳🇬 Nigeria',
+    KE: '🇰🇪 Kenya', ET: '🇪🇹 Ethiopia', GH: '🇬🇭 Ghana', ZA: '🇿🇦 South Africa',
+    TZ: '🇹🇿 Tanzania', UG: '🇺🇬 Uganda', RW: '🇷🇼 Rwanda', CM: '🇨🇲 Cameroon',
+    SN: '🇸🇳 Senegal', CI: '🇨🇮 Côte d\'Ivoire', ML: '🇲🇱 Mali', BF: '🇧🇫 Burkina Faso',
+    NE: '🇳🇪 Niger', GN: '🇬🇳 Guinea', BJ: '🇧🇯 Benin', TG: '🇹🇬 Togo',
+    CF: '🇨🇫 Central African Republic', CG: '🇨🇬 Congo', CD: '🇨🇩 DR Congo',
+    GA: '🇬🇦 Gabon', GQ: '🇬🇶 Equatorial Guinea', AO: '🇦🇴 Angola',
+    ZM: '🇿🇲 Zambia', ZW: '🇿🇼 Zimbabwe', BW: '🇧🇼 Botswana', NA: '🇳🇦 Namibia',
+    MZ: '🇲🇿 Mozambique', MG: '🇲🇬 Madagascar', MW: '🇲🇼 Malawi',
+    SC: '🇸🇨 Seychelles', MU: '🇲🇺 Mauritius', SS: '🇸🇸 South Sudan',
+    LR: '🇱🇷 Liberia', SL: '🇸🇱 Sierra Leone', GM: '🇬🇲 Gambia',
+    CV: '🇨🇻 Cape Verde', BI: '🇧🇮 Burundi',
+    GB: '🇬🇧 United Kingdom', FR: '🇫🇷 France', DE: '🇩🇪 Germany', IT: '🇮🇹 Italy',
+    ES: '🇪🇸 Spain', PT: '🇵🇹 Portugal', NL: '🇳🇱 Netherlands', BE: '🇧🇪 Belgium',
+    CH: '🇨🇭 Switzerland', AT: '🇦🇹 Austria', SE: '🇸🇪 Sweden', NO: '🇳🇴 Norway',
+    DK: '🇩🇰 Denmark', FI: '🇫🇮 Finland', IE: '🇮🇪 Ireland', PL: '🇵🇱 Poland',
+    CZ: '🇨🇿 Czech Republic', SK: '🇸🇰 Slovakia', HU: '🇭🇺 Hungary', RO: '🇷🇴 Romania',
+    BG: '🇧🇬 Bulgaria', GR: '🇬🇷 Greece', HR: '🇭🇷 Croatia', RS: '🇷🇸 Serbia',
+    BA: '🇧🇦 Bosnia', ME: '🇲🇪 Montenegro', MK: '🇲🇰 North Macedonia', AL: '🇦🇱 Albania',
+    SI: '🇸🇮 Slovenia', LT: '🇱🇹 Lithuania', LV: '🇱🇻 Latvia', EE: '🇪🇪 Estonia',
+    UA: '🇺🇦 Ukraine', BY: '🇧🇾 Belarus', MD: '🇲🇩 Moldova', IS: '🇮🇸 Iceland',
+    LU: '🇱🇺 Luxembourg', MT: '🇲🇹 Malta', AD: '🇦🇩 Andorra', MC: '🇲🇨 Monaco',
+    VA: '🇻🇦 Vatican', XK: '🇽🇰 Kosovo',
+    CN: '🇨🇳 China', JP: '🇯🇵 Japan', KR: '🇰🇷 South Korea', IN: '🇮🇳 India',
+    PK: '🇵🇰 Pakistan', BD: '🇧🇩 Bangladesh', TH: '🇹🇭 Thailand', VN: '🇻🇳 Vietnam',
+    PH: '🇵🇭 Philippines', ID: '🇮🇩 Indonesia', MY: '🇲🇾 Malaysia', SG: '🇸🇬 Singapore',
+    MM: '🇲🇲 Myanmar', KH: '🇰🇭 Cambodia', LA: '🇱🇦 Laos', NP: '🇳🇵 Nepal',
+    LK: '🇱🇰 Sri Lanka', AF: '🇦🇫 Afghanistan', MN: '🇲🇳 Mongolia',
+    KZ: '🇰🇿 Kazakhstan', UZ: '🇺🇿 Uzbekistan', TM: '🇹🇲 Turkmenistan',
+    KG: '🇰🇬 Kyrgyzstan', TJ: '🇹🇯 Tajikistan', GE: '🇬🇪 Georgia',
+    AM: '🇦🇲 Armenia', AZ: '🇦🇿 Azerbaijan', TW: '🇹🇼 Taiwan',
+    BN: '🇧🇳 Brunei', BT: '🇧🇹 Bhutan', MV: '🇲🇻 Maldives', TL: '🇹🇱 East Timor',
+    US: '🇺🇸 United States', CA: '🇨🇦 Canada', MX: '🇲🇽 Mexico',
+    GT: '🇬🇹 Guatemala', HN: '🇭🇳 Honduras', SV: '🇸🇻 El Salvador',
+    NI: '🇳🇮 Nicaragua', CR: '🇨🇷 Costa Rica', PA: '🇵🇦 Panama',
+    CU: '🇨🇺 Cuba', JM: '🇯🇲 Jamaica', HT: '🇭🇹 Haiti',
+    DO: '🇩🇴 Dominican Republic', PR: '🇵🇷 Puerto Rico', TT: '🇹🇹 Trinidad and Tobago',
+    BB: '🇧🇧 Barbados', BS: '🇧🇸 Bahamas', BZ: '🇧🇿 Belize',
+    GD: '🇬🇩 Grenada', LC: '🇱🇨 Saint Lucia', KN: '🇰🇳 Saint Kitts and Nevis',
+    VC: '🇻🇨 Saint Vincent', AG: '🇦🇬 Antigua and Barbuda', DM: '🇩🇲 Dominica',
+    BR: '🇧🇷 Brazil', AR: '🇦🇷 Argentina', CL: '🇨🇱 Chile',
+    CO: '🇨🇴 Colombia', PE: '🇵🇪 Peru', VE: '🇻🇪 Venezuela',
+    EC: '🇪🇨 Ecuador', BO: '🇧🇴 Bolivia', PY: '🇵🇾 Paraguay', UY: '🇺🇾 Uruguay',
+    AU: '🇦🇺 Australia', NZ: '🇳🇿 New Zealand', PG: '🇵🇬 Papua New Guinea',
+    FJ: '🇫🇯 Fiji', WS: '🇼🇸 Samoa', TO: '🇹🇴 Tonga',
+    VU: '🇻🇺 Vanuatu', SB: '🇸🇧 Solomon Islands', KI: '🇰🇮 Kiribati',
+    MH: '🇲🇭 Marshall Islands', FM: '🇫🇲 Micronesia', PW: '🇵🇼 Palau', NR: '🇳🇷 Nauru', TV: '🇹🇻 Tuvalu'
+};
+
 const LANG_DATA = {
     ar: {
         dir: 'rtl',
@@ -81,7 +137,7 @@ const LANG_DATA = {
             DJ: '🇩🇯 جيبوتي', KM: '🇰🇲 جزر القمر', TD: '🇹🇩 تشاد', NG: '🇳🇬 نيجيريا',
             KE: '🇰🇪 كينيا', ET: '🇪🇹 إثيوبيا', GH: '🇬🇭 غانا', ZA: '🇿🇦 جنوب أفريقيا',
             TZ: '🇹🇿 تنزانيا', UG: '🇺🇬 أوغندا', RW: '🇷🇼 رواندا', CM: '🇨🇲 الكاميرون',
-            SN: '🇸🇳 السنegal', CI: '🇨🇮 ساحل العاج', ML: '🇲🇱 مالي', BF: '🇧🇫 بوركينافاسو',
+            SN: '🇸🇳 السنغال', CI: '🇨🇮 ساحل العاج', ML: '🇲🇱 مالي', BF: '🇧🇫 بوركينافاسو',
             NE: '🇳🇪 النيجر', GN: '🇬🇳 غينيا', BJ: '🇧🇯 بنين', TG: '🇹🇬 توغو',
             CF: '🇨🇫 أفريقيا الوسطى', CG: '🇨🇬 الكونغو', CD: '🇨🇩 الكونغو الديمقراطية',
             GA: '🇬🇦 الغابون', GQ: '🇬🇶 غينيا الاستوائية', AO: '🇦🇴 أنغولا',
@@ -532,6 +588,237 @@ const LANG_DATA = {
         },
         countries: {},
         groups: { mideast: 'شام', africa: 'افریقہ', europe: 'یورپ', asia: 'ایشیا', northAmerica: 'شمالی امریکہ', southAmerica: 'جنوبی امریکہ', oceania: 'اوشینیا' }
+    },
+    he: {
+        dir: 'rtl',
+        label: 'עברית',
+        flag: '🇮🇱',
+        nav: { connected: 'מחובר' },
+        hero: {
+            title1: 'דבר עם אנשים',
+            title2: 'מסביב לעולם',
+            subtitle: 'שיחות וידאו אקראיות מיידיות. התחל והכיר אנשים חדשים.',
+            imLabel: 'אני', searchLabel: 'מחפש', genderLabel: 'מגדר',
+            male: 'גבר', female: 'אישה', anyGender: 'הכל',
+            males: 'גברים', females: 'נשים', anyCountry: '🌍 כל מדינה',
+            ageConfirm: 'אני מאשר/ת שאני בן/בת 18 ומעלה',
+            startBtn: 'התחל עכשיו', onlineNow: 'מחוברים עכשיו', chatsToday: 'שיחות היום'
+        },
+        phone: {
+            goLive: 'GoLive', lin: 'Lin', settings: 'הגדרות', gallery: 'גלריה',
+            linTitle: 'Lin Premium', linSub: 'פתח את כל התכונות',
+            linF1: 'מסננים מתקדמים', linF1sub: '+50 מסננים בלעדיים',
+            linF2: 'עדיפות בחיבור', linF2sub: 'התחבר מהר יותר',
+            linF3: 'ללא פרסומות', linF3sub: 'חוויה נקייה',
+            linF4: 'תג יוקרתי', linF4sub: 'פרופיל מיוחד',
+            planMonthly: 'חודשי', planYearly: 'שנתי', perMonth: '/חודש', perYear: '/שנה', planPopular: 'הפופולרי ביותר', planSave: 'חסוך 40%',
+            buyBtn: 'הירשם עכשיו', planTrial: 'ניסיון חינם ל-7 ימים. ניתן לבטל בכל עת.',
+            myAccount: 'החשבון שלי', notifications: 'התראות', language: 'שפה', privacy: 'פרטיות', about: 'אודות',
+            galleryLock: 'הזן קוד סודי', galleryEmpty: 'אין עדיין תמונות', passError: 'קוד סודי שגוי'
+        },
+        howItWorks: {
+            title: 'איך זה עובד?',
+            step1Title: 'פתח את המצלמה', step1Desc: 'אפשר לאתר להשתמש במצלמה ובמיקרופון שלך',
+            step2Title: 'מצא מישהו', step2Desc: 'לחץ על חיפוש וחכה כמה שניות',
+            step3Title: 'שוחח או דלג', step3Desc: 'לא מתאים? לחץ על הבא'
+        },
+        footer: {
+            terms: 'תנאי שימוש', privacy: 'מדיניות פרטיות', contact: 'צור קשר', copy: '© 2026 GoLive. כל הזכויות שמורות.'
+        },
+        countries: {
+            JO: '🇯🇴 ירדן', SA: '🇸🇦 סעודיה', AE: '🇦🇪 איחוד האמירויות', EG: '🇪🇬 מצרים',
+            IQ: '🇮🇶 עיראק', KW: '🇰🇼 כווית', QA: '🇶🇦 קטאר', BH: '🇧🇭 בחריין',
+            OM: '🇴🇲 עומאן', LB: '🇱🇧 לבנון', SY: '🇸🇾 סוריה', PS: '🇵🇸 פלסטין',
+            TR: '🇹🇷 טורקיה', IL: '🇮🇱 ישראל', IR: '🇮🇷 איראן', CY: '🇨🇾 קפריסין',
+            MA: '🇲🇦 מרוקו', DZ: '🇩🇿 אלג\'יריה', TN: '🇹🇳 תוניסיה', LY: '🇱🇾 לוב',
+            SD: '🇸🇩 סודן', YE: '🇾🇪 תימן', NG: '🇳🇬 ניגריה', KE: '🇰🇪 קניה',
+            ET: '🇪🇹 אתיופיה', GH: '🇬🇭 גאנה', ZA: '🇿🇦 דרום אפריקה',
+            US: '🇺🇸 ארצות הברית', CA: '🇨🇦 קנדה', GB: '🇬🇧 בריטניה', FR: '🇫🇷 צרפת',
+            DE: '🇩🇪 גרמניה', IT: '🇮🇹 איטליה', ES: '🇪🇸 ספרד', PT: '🇵🇹 פורטוגל',
+            NL: '🇳🇱 הולנד', SE: '🇸🇪 שוודיה', NO: '🇳🇴 נורווגיה', DK: '🇩🇰 דנמרק',
+            PL: '🇵🇱 פולין', UA: '🇺🇦 אוקראינה', RO: '🇷🇴 רומניה', GR: '🇬🇷 יוון',
+            CN: '🇨🇳 סין', JP: '🇯🇵 יפן', KR: '🇰🇷 דרום קוריאה', IN: '🇮🇳 הודו',
+            PK: '🇵🇰 פקיסטן', BD: '🇧🇩 בנגלדש', TH: '🇹🇭 תאילנד', VN: '🇻🇳 וייטנאם',
+            PH: '🇵🇭 הפיליפינים', ID: '🇮🇩 אינדונזיה', MY: '🇲🇾 מלזיה', SG: '🇸🇬 סינגפור',
+            AU: '🇦🇺 אוסטרליה', NZ: '🇳🇿 ניו זילנד', BR: '🇧🇷 ברזיל', AR: '🇦🇷 ארגנטינה', MX: '🇲🇽 מקסיקו'
+        },
+        groups: { mideast: 'המזרח התיכון', africa: 'אפריקה', europe: 'אירופה', asia: 'אסיה', northAmerica: 'צפון אמריקה', southAmerica: 'דרום אמריקה', oceania: 'אוקיאניה' },
+        chat: {
+            status: { connecting: 'מתחבר...', searching: 'מחפש...', connected: 'מחובר', disconnected: 'החיבור נותק', error: 'שגיאה', stopped: 'הופסק' },
+            toolbar: { next: 'הבא', stop: 'עצור', mute: 'השתק', camera: 'מצלמה' },
+            filters: { none: '❌ ללא', cool: '😎 משקפיים', heart: '❤️ לבבות', star: '⭐ כוכבים', fire: '🔥 אש', crown: '👑 כתר', rainbow: '🌈 קשת', snow: '❄️ שלג', party: '🎉 מסיבה' },
+            chat: { welcome: 'ברוכים הבאים ל-GoLive. התחילו לשוחח!', placeholder: 'כתוב הודעה...' },
+            stats: { title: 'הסטטיסטיקות שלי', chats: 'שיחות', minutes: 'דקות', countries: 'מדינות', points: 'נקודות', level: 'רמה', visited: 'מדינות שביקרת', close: 'סגור' },
+            leader: { title: 'לוח המובילים', close: 'סגור' },
+            report: { title: 'דווח על משתמש', nude: 'תוכן לא הולם', spam: 'ספאם', kid: 'משתמש מתחת ל-18', abuse: 'הטרדה', cancel: 'ביטול', submit: 'שלח' },
+            warning: { text: 'זוהה תוכן לא הולם. השיחה נותקה.', ok: 'הבנתי' },
+            messages: {
+                cameraError: 'לא ניתן היה לפתוח את המצלמה. ודא שאישרת את ההרשאה.',
+                searching: 'מחפש מישהו...',
+                connected: 'מחובר למישהו!',
+                skipped: 'המשתמש עזב. לחץ על הבא למצוא מישהו חדש',
+                stopped: 'הפסקת את השיחה. לחץ על הבא להמשיך',
+                left: 'המשתמש עזב את השיחה.',
+                blocked: '[ההודעה חסומה - תוכן לא הולם]',
+                reported: 'הדיווח נשלח. תודה על העזרה.',
+                disconnected: 'החיבור לשרת נותק. מתחבר מחדש...',
+                levelUp: 'מזל טוב! הגעת לרמה'
+            }
+        }
+    },
+    ru: {
+        dir: 'ltr',
+        label: 'Русский',
+        flag: '🇷🇺',
+        nav: { connected: 'Онлайн' },
+        hero: {
+            title1: 'Общайтесь с людьми',
+            title2: 'по всему миру',
+            subtitle: 'Мгновенные случайные видеозвонки. Нажмите «Начать» и знакомьтесь с новыми людьми.',
+            imLabel: 'Я', searchLabel: 'Ищу', genderLabel: 'Пол',
+            male: 'Мужчина', female: 'Женщина', anyGender: 'Все',
+            males: 'Мужчины', females: 'Женщины', anyCountry: '🌍 Любая страна',
+            ageConfirm: 'Подтверждаю, что мне 18 лет или больше',
+            startBtn: 'Начать', onlineNow: 'Сейчас онлайн', chatsToday: 'Чатов сегодня'
+        },
+        phone: {
+            goLive: 'GoLive', lin: 'Lin', settings: 'Настройки', gallery: 'Галерея',
+            linTitle: 'Lin Premium', linSub: 'Откройте все функции',
+            linF1: 'Продвинутые фильтры', linF1sub: '+50 эксклюзивных фильтров',
+            linF2: 'Приоритет соединения', linF2sub: 'Подключайтесь быстрее',
+            linF3: 'Без рекламы', linF3sub: 'Чистый опыт',
+            linF4: 'Премиум-бейдж', linF4sub: 'Особый профиль',
+            planMonthly: 'Месячный', planYearly: 'Годовой', perMonth: '/мес', perYear: '/год', planPopular: 'Самый популярный', planSave: 'Скидка 40%',
+            buyBtn: 'Подписаться', planTrial: 'Бесплатная пробная версия 7 дней. Отмена в любое время.',
+            myAccount: 'Мой аккаунт', notifications: 'Уведомления', language: 'Язык', privacy: 'Конфиденциальность', about: 'О нас',
+            galleryLock: 'Введите PIN-код', galleryEmpty: 'Пока нет фото', passError: 'Неверный PIN-код'
+        },
+        howItWorks: {
+            title: 'Как это работает?',
+            step1Title: 'Включите камеру', step1Desc: 'Разрешите сайту использовать вашу камеру и микрофон',
+            step2Title: 'Найдите человека', step2Desc: 'Нажмите поиск и подождите несколько секунд',
+            step3Title: 'Общайтесь или листайте', step3Desc: 'Не интересно? Нажмите «Далее»'
+        },
+        footer: {
+            terms: 'Условия использования', privacy: 'Политика конфиденциальности', contact: 'Связаться с нами', copy: '© 2026 GoLive. Все права защищены.'
+        },
+        countries: {
+            JO: '🇯🇴 Иордания', SA: '🇸🇦 Саудовская Аравия', AE: '🇦🇪 ОАЭ', EG: '🇪🇬 Египет',
+            IQ: '🇮🇶 Ирак', KW: '🇰🇼 Кувейт', QA: '🇶🇦 Катар', BH: '🇧🇭 Бахрейн',
+            OM: '🇴🇲 Оман', LB: '🇱🇧 Ливан', SY: '🇸🇾 Сирия', PS: '🇵🇸 Палестина',
+            TR: '🇹🇷 Турция', IL: '🇮🇱 Израиль', IR: '🇮🇷 Иран', CY: '🇨🇾 Кипр',
+            MA: '🇲🇦 Марокко', DZ: '🇩🇿 Алжир', TN: '🇹🇳 Тунис', LY: '🇱🇾 Ливия',
+            SD: '🇸🇩 Судан', YE: '🇾🇪 Йемен', NG: '🇳🇬 Нигерия', KE: '🇰🇪 Кения',
+            ET: '🇪🇹 Эфиопия', GH: '🇬🇭 Гана', ZA: '🇿🇦 ЮАР',
+            US: '🇺🇸 США', CA: '🇨🇦 Канада', GB: '🇬🇧 Великобритания', FR: '🇫🇷 Франция',
+            DE: '🇩🇪 Германия', IT: '🇮🇹 Италия', ES: '🇪🇸 Испания', PT: '🇵🇹 Португалия',
+            NL: '🇳🇱 Нидерланды', SE: '🇸🇪 Швеция', NO: '🇳🇴 Норвегия', DK: '🇩🇰 Дания',
+            PL: '🇵🇱 Польша', UA: '🇺🇦 Украина', RO: '🇷🇴 Румыния', GR: '🇬🇷 Греция',
+            CN: '🇨🇳 Китай', JP: '🇯🇵 Япония', KR: '🇰🇷 Южная Корея', IN: '🇮🇳 Индия',
+            PK: '🇵🇰 Пакистан', BD: '🇧🇩 Бангладеш', TH: '🇹🇭 Таиланд', VN: '🇻🇳 Вьетнам',
+            PH: '🇵🇭 Филиппины', ID: '🇮🇩 Индонезия', MY: '🇲🇾 Малайзия', SG: '🇸🇬 Сингапур',
+            AU: '🇦🇺 Австралия', NZ: '🇳🇿 Новая Зеландия', BR: '🇧🇷 Бразилия', AR: '🇦🇷 Аргентина', MX: '🇲🇽 Мексика'
+        },
+        groups: { mideast: 'Ближний Восток', africa: 'Африка', europe: 'Европа', asia: 'Азия', northAmerica: 'Северная Америка', southAmerica: 'Южная Америка', oceania: 'Океания' },
+        chat: {
+            status: { connecting: 'Подключение...', searching: 'Поиск...', connected: 'Подключено', disconnected: 'Отключено', error: 'Ошибка', stopped: 'Остановлено' },
+            toolbar: { next: 'Далее', stop: 'Стоп', mute: 'Микрофон', camera: 'Камера' },
+            filters: { none: '❌ Без', cool: '😎 Очки', heart: '❤️ Сердца', star: '⭐ Звёзды', fire: '🔥 Огонь', crown: '👑 Корона', rainbow: '🌈 Радуга', snow: '❄️ Снег', party: '🎉 Вечеринка' },
+            chat: { welcome: 'Добро пожаловать в GoLive. Начните общаться!', placeholder: 'Введите сообщение...' },
+            stats: { title: 'Моя статистика', chats: 'Чаты', minutes: 'Минуты', countries: 'Страны', points: 'Очки', level: 'Уровень', visited: 'Посещённые страны', close: 'Закрыть' },
+            leader: { title: 'Таблица лидеров', close: 'Закрыть' },
+            report: { title: 'Пожаловаться', nude: 'Неприемлемый контент', spam: 'Спам', kid: 'Пользователь младше 18', abuse: 'Оскорбление', cancel: 'Отмена', submit: 'Отправить' },
+            warning: { text: 'Обнаружен неприемлемый контент. Чат отключён.', ok: 'Понятно' },
+            messages: {
+                cameraError: 'Не удалось открыть камеру. Убедитесь, что вы разрешили доступ.',
+                searching: 'Поиск собеседника...',
+                connected: 'Вы подключены к собеседнику!',
+                skipped: 'Пользователь вышел. Нажмите «Далее», чтобы найти нового',
+                stopped: 'Вы остановили чат. Нажмите «Далее», чтобы продолжить',
+                left: 'Пользователь покинул чат.',
+                blocked: '[Сообщение скрыто - неприемлемый контент]',
+                reported: 'Жалоба отправлена. Спасибо!',
+                disconnected: 'Соединение с сервером потеряно. Переподключение...',
+                levelUp: 'Поздравляем! Вы достигли уровня'
+            }
+        }
+    },
+    de: {
+        dir: 'ltr',
+        label: 'Deutsch',
+        flag: '🇩🇪',
+        nav: { connected: 'Online' },
+        hero: {
+            title1: 'Sprich mit Menschen',
+            title2: 'auf der ganzen Welt',
+            subtitle: 'Sofortige zufällige Videoanrufe. Drücke Start und lerne neue Leute kennen.',
+            imLabel: 'Ich bin', searchLabel: 'Ich suche', genderLabel: 'Geschlecht',
+            male: 'Mann', female: 'Frau', anyGender: 'Alle',
+            males: 'Männer', females: 'Frauen', anyCountry: '🌍 Jedes Land',
+            ageConfirm: 'Ich bestätige, dass ich 18 Jahre oder älter bin',
+            startBtn: 'Jetzt starten', onlineNow: 'Jetzt online', chatsToday: 'Chats heute'
+        },
+        phone: {
+            goLive: 'GoLive', lin: 'Lin', settings: 'Einstellungen', gallery: 'Galerie',
+            linTitle: 'Lin Premium', linSub: 'Alle Funktionen freischalten',
+            linF1: 'Erweiterte Filter', linF1sub: '+50 exklusive Filter',
+            linF2: 'Prioritätsverbindung', linF2sub: 'Schneller verbinden',
+            linF3: 'Keine Werbung', linF3sub: 'Saubere Erfahrung',
+            linF4: 'Premium-Abzeichen', linF4sub: 'Besonderes Profil',
+            planMonthly: 'Monatlich', planYearly: 'Jährlich', perMonth: '/Monat', perYear: '/Jahr', planPopular: 'Am beliebtesten', planSave: '40% sparen',
+            buyBtn: 'Jetzt abonnieren', planTrial: '7 Tage kostenlose Testversion. Jederzeit kündbar.',
+            myAccount: 'Mein Konto', notifications: 'Benachrichtigungen', language: 'Sprache', privacy: 'Datenschutz', about: 'Über uns',
+            galleryLock: 'PIN eingeben', galleryEmpty: 'Noch keine Fotos', passError: 'Falscher PIN'
+        },
+        howItWorks: {
+            title: 'Wie funktioniert es?',
+            step1Title: 'Kamera öffnen', step1Desc: 'Erlaube der Seite, deine Kamera und dein Mikrofon zu verwenden',
+            step2Title: 'Jemanden finden', step2Desc: 'Drücke auf Suchen und warte ein paar Sekunden',
+            step3Title: 'Chatten oder weiter', step3Desc: 'Nicht interessant? Klicke auf Weiter'
+        },
+        footer: {
+            terms: 'Nutzungsbedingungen', privacy: 'Datenschutzerklärung', contact: 'Kontakt', copy: '© 2026 GoLive. Alle Rechte vorbehalten.'
+        },
+        countries: {
+            JO: '🇯🇴 Jordanien', SA: '🇸🇦 Saudi-Arabien', AE: '🇦🇪 VAE', EG: '🇪🇬 Ägypten',
+            IQ: '🇮🇶 Irak', KW: '🇰🇼 Kuwait', QA: '🇶🇦 Katar', BH: '🇧🇭 Bahrain',
+            OM: '🇴🇲 Oman', LB: '🇱🇧 Libanon', SY: '🇸🇾 Syrien', PS: '🇵🇸 Palästina',
+            TR: '🇹🇷 Türkei', IL: '🇮🇱 Israel', IR: '🇮🇷 Iran', CY: '🇨🇾 Zypern',
+            MA: '🇲🇦 Marokko', DZ: '🇩🇿 Algerien', TN: '🇹🇳 Tunesien', LY: '🇱🇾 Libyen',
+            SD: '🇸🇩 Sudan', YE: '🇾🇪 Jemen', NG: '🇳🇬 Nigeria', KE: '🇰🇪 Kenia',
+            ET: '🇪🇹 Äthiopien', GH: '🇬🇭 Ghana', ZA: '🇿🇦 Südafrika',
+            US: '🇺🇸 USA', CA: '🇨🇦 Kanada', GB: '🇬🇧 Großbritannien', FR: '🇫🇷 Frankreich',
+            DE: '🇩🇪 Deutschland', IT: '🇮🇹 Italien', ES: '🇪🇸 Spanien', PT: '🇵🇹 Portugal',
+            NL: '🇳🇱 Niederlande', SE: '🇸🇪 Schweden', NO: '🇳🇴 Norwegen', DK: '🇩🇰 Dänemark',
+            PL: '🇵🇱 Polen', UA: '🇺🇦 Ukraine', RO: '🇷🇴 Rumänien', GR: '🇬🇷 Griechenland',
+            CN: '🇨🇳 China', JP: '🇯🇵 Japan', KR: '🇰🇷 Südkorea', IN: '🇮🇳 Indien',
+            PK: '🇵🇰 Pakistan', BD: '🇧🇩 Bangladesch', TH: '🇹🇭 Thailand', VN: '🇻🇳 Vietnam',
+            PH: '🇵🇭 Philippinen', ID: '🇮🇩 Indonesien', MY: '🇲🇾 Malaysia', SG: '🇸🇬 Singapur',
+            AU: '🇦🇺 Australien', NZ: '🇳🇿 Neuseeland', BR: '🇧🇷 Brasilien', AR: '🇦🇷 Argentinien', MX: '🇲🇽 Mexiko'
+        },
+        groups: { mideast: 'Naher Osten', africa: 'Afrika', europe: 'Europa', asia: 'Asien', northAmerica: 'Nordamerika', southAmerica: 'Südamerika', oceania: 'Ozeanien' },
+        chat: {
+            status: { connecting: 'Verbinde...', searching: 'Suche...', connected: 'Verbunden', disconnected: 'Getrennt', error: 'Fehler', stopped: 'Gestoppt' },
+            toolbar: { next: 'Weiter', stop: 'Stopp', mute: 'Stumm', camera: 'Kamera' },
+            filters: { none: '❌ Kein', cool: '😎 Brille', heart: '❤️ Herzen', star: '⭐ Sterne', fire: '🔥 Feuer', crown: '👑 Krone', rainbow: '🌈 Regenbogen', snow: '❄️ Schnee', party: '🎉 Party' },
+            chat: { welcome: 'Willkommen bei GoLive. Starte den Chat!', placeholder: 'Nachricht schreiben...' },
+            stats: { title: 'Meine Statistiken', chats: 'Chats', minutes: 'Minuten', countries: 'Länder', points: 'Punkte', level: 'Level', visited: 'Besuchte Länder', close: 'Schließen' },
+            leader: { title: 'Bestenliste', close: 'Schließen' },
+            report: { title: 'Benutzer melden', nude: 'Unangemessener Inhalt', spam: 'Spam', kid: 'Benutzer unter 18', abuse: 'Belästigung', cancel: 'Abbrechen', submit: 'Senden' },
+            warning: { text: 'Unangemessener Inhalt erkannt. Chat wurde getrennt.', ok: 'Verstanden' },
+            messages: {
+                cameraError: 'Kamera konnte nicht geöffnet werden. Stelle sicher, dass du die Berechtigung erteilt hast.',
+                searching: 'Suche nach jemandem...',
+                connected: 'Mit jemandem verbunden!',
+                skipped: 'Benutzer hat verlassen. Drücke Weiter, um jemand Neues zu finden',
+                stopped: 'Chat gestoppt. Drücke Weiter, um fortzufahren',
+                left: 'Der Benutzer hat den Chat verlassen.',
+                blocked: '[Nachricht blockiert - unangemessener Inhalt]',
+                reported: 'Meldung gesendet. Danke für deine Hilfe.',
+                disconnected: 'Verbindung zum Server verloren. Verbinde erneut...',
+                levelUp: 'Glückwunsch! Du hast Level erreicht'
+            }
+        }
     }
 };
 

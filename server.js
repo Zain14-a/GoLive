@@ -78,6 +78,7 @@ async function groqBotResponse(messages, gender, apiKey) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         body: JSON.stringify({
             model: 'qwen/qwen3.6-27b',
+            reasoning_effort: 'none',
             messages: gptMessages,
             temperature: 0.8,
             max_tokens: 150

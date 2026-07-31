@@ -431,15 +431,18 @@ input { font-family: inherit; }
     padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;
     color: #f59e0b; font-weight: 700;
 }
-.points-icon { font-size: 1rem; }
+.points-icon { font-size: 1rem; display: inline-flex; }
 .topbar-icon {
     background: none; color: var(--text2); font-size: 1.2rem;
     padding: 6px 10px; border-radius: 8px; transition: all 0.2s;
+    display: inline-flex; align-items: center; justify-content: center;
 }
+.topbar-icon svg, .topbar-report svg { display: block; }
 .topbar-icon:hover { color: var(--accent); background: rgba(255,59,92,0.1); }
 .topbar-report {
     background: none; color: var(--text2); font-size: 1.2rem;
     padding: 6px 10px; border-radius: 8px; transition: all 0.2s;
+    display: inline-flex; align-items: center; justify-content: center;
 }
 .topbar-report:hover { color: var(--accent); background: rgba(255,59,92,0.1); }
 
@@ -867,10 +870,17 @@ input { font-family: inherit; }
 
 /* Theme Toggle Button */
 .theme-btn {
-    background: none; border: none; font-size: 1.2rem;
+    background: none; border: none;
     cursor: pointer; padding: 4px 8px; border-radius: 8px;
     transition: all 0.3s; line-height: 1; margin-left: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text2);
 }
+.theme-btn svg { width: 17px; height: 17px; }
+.theme-btn .icon-moon { display: none; }
+.theme-btn .icon-sun { display: inline; }
+[data-theme="light"] .theme-btn .icon-sun { display: none; }
+[data-theme="light"] .theme-btn .icon-moon { display: inline; }
 .theme-btn:hover { background: rgba(255,255,255,0.1); }
 [data-theme="light"] .theme-btn:hover { background: rgba(0,0,0,0.08); }
 
@@ -894,7 +904,7 @@ input { font-family: inherit; }
 }
 .bot-invite.show { display: block; }
 .bot-invite-inner { display: flex; align-items: center; gap: 10px; }
-.bot-invite-inner span { font-size: 1.5rem; }
+.bot-invite-icon { flex-shrink: 0; color: var(--accent); }
 .bot-invite-inner strong { font-size: 0.85rem; }
 .bot-invite-inner p { font-size: 0.75rem; color: var(--text2); }
 .bot-start-btn {

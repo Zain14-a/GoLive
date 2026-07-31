@@ -173,3 +173,16 @@ setInterval(() => {
     today += Math.floor(Math.random() * 3);
     todayCount.textContent = today.toLocaleString();
 }, 4000);
+
+// ===================== THEME TOGGLE =====================
+(function() {
+    const saved = localStorage.getItem('golive_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('golive_theme', next);
+    });
+})();

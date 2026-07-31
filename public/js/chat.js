@@ -686,19 +686,12 @@ socket.on('connect_error', (err) => {
 (function() {
     const saved = localStorage.getItem('golive_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
-    const updateBtns = () => {
-        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        const emoji = isLight ? '🌙' : '☀️';
-        document.querySelectorAll('#themeToggle, #themeToggleChat').forEach(b => { if (b) b.textContent = emoji; });
-    };
-    updateBtns();
     document.querySelectorAll('#themeToggle, #themeToggleChat').forEach(btn => {
         if (btn) btn.addEventListener('click', () => {
             const cur = document.documentElement.getAttribute('data-theme');
             const next = cur === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('golive_theme', next);
-            updateBtns();
         });
     });
 })();
@@ -847,7 +840,7 @@ function startBotAvatar() {
         setTimeout(() => sendBotMessage(), 2000);
     }
 
-    remoteFlag.textContent = '🤖';
+    remoteFlag.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2" ry="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="4" r="2"></circle><path d="M9 13h.01M15 13h.01"></path></svg>';
 }
 
 function stopBotAvatar() {

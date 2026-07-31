@@ -589,16 +589,17 @@ sendBtn.addEventListener('click', () => {
     const text = msgInput.value.trim();
     if (!text) return;
 
-    // Bot mode — send to bot API
-    if (botActive && !currentRoomId) {
-        addMsg(text, 'sent');
-        msgInput.value = '';
-        sendBotMessage(text);
-        return;
-    }
-
+    // Yeame moderation applies in all modes (bot or live partner)
     const moderated = Yeame.moderateOutgoing(text);
     if (moderated === null) return;
+
+    // Bot mode — send to bot API
+    if (botActive && !currentRoomId) {
+        addMsg(moderated, 'sent');
+        msgInput.value = '';
+        sendBotMessage(moderated);
+        return;
+    }
 
     addMsg(moderated, 'sent');
     socket.emit('sendMessage', { text: moderated });

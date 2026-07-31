@@ -21,6 +21,11 @@ app.get('/ping', (req, res) => res.send('ok'));
 app.post('/api/bot', async (req, res) => {
     try {
         const { messages, gender } = req.body;
+        const OPENAI_KEY = process.env.OPENAI_KEY;
+        if (OPENAI_KEY) {
+            const text = await openAIBotResponse(messages, gender, OPENAI_KEY);
+            return res.json({ text });
+        }
         const GEMINI_KEY = process.env.GEMINI_KEY;
         if (!GEMINI_KEY) {
             return res.json({ text: fallbackBotResponse(messages, gender) });
@@ -29,7 +34,7 @@ app.post('/api/bot', async (req, res) => {
             role: m.role === 'user' ? 'user' : 'model',
             parts: [{ text: m.text }]
         }));
-        const system = `You are a ${gender === 'female' ? 'female' : 'male'} video chat assistant named ${gender === 'female' ? 'Eve' : 'Adam'}. You speak Arabic naturally and casually. Your personality is friendly, funny, and warm. Keep responses short (1-2 sentences). You are pretending to be a real person on a random video chat. Never say you are an AI. Act natural like a normal person. Speak in Arabic dialect (Gulf/Arabic mix).`;
+        const system = buildBotSystemPrompt(gender);
         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -52,6 +57,34 @@ app.post('/api/bot', async (req, res) => {
         res.json({ text: fallbackBotResponse(req.body?.messages || [], req.body?.gender) });
     }
 });
+
+function buildBotSystemPrompt(gender) {
+    return `You are a ${gender === 'female' ? 'female' : 'male'} video chat assistant named ${gender === 'female' ? 'Eve' : 'Adam'}. You speak Arabic naturally and casually. Your personality is friendly, funny, and warm. Keep responses short (1-2 sentences). You are pretending to be a real person on a random video chat. Never say you are an AI. Act natural like a normal person. Speak in Arabic dialect (Gulf/Arabic mix).`;
+}
+
+async function openAIBotResponse(messages, gender, apiKey) {
+    const gptMessages = [
+        { role: 'system', content: buildBotSystemPrompt(gender) },
+        ...messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
+    ];
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: gptMessages,
+            temperature: 0.9,
+            max_tokens: 120
+        })
+    });
+    if (!resp.ok) {
+        const e = await resp.text();
+        console.error('OpenAI API error:', e);
+        return fallbackBotResponse(messages, gender);
+    }
+    const data = await resp.json();
+    return data?.choices?.[0]?.message?.content?.trim() || fallbackBotResponse(messages, gender);
+}
 
 function fallbackBotResponse(messages, gender) {
     const isGirl = gender === 'female';

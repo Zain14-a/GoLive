@@ -21,6 +21,11 @@ app.get('/ping', (req, res) => res.send('ok'));
 app.post('/api/bot', async (req, res) => {
     try {
         const { messages, gender } = req.body;
+        const GROQ_KEY = process.env.GROQ_API_KEY;
+        if (GROQ_KEY) {
+            const text = await groqBotResponse(messages, gender, GROQ_KEY);
+            return res.json({ text });
+        }
         const OPENAI_KEY = process.env.OPENAI_KEY;
         if (OPENAI_KEY) {
             const text = await openAIBotResponse(messages, gender, OPENAI_KEY);
@@ -60,6 +65,30 @@ app.post('/api/bot', async (req, res) => {
 
 function buildBotSystemPrompt(gender) {
     return `You are a ${gender === 'female' ? 'female' : 'male'} video chat assistant named ${gender === 'female' ? 'Eve' : 'Adam'}. You speak Arabic naturally and casually. Your personality is friendly, funny, and warm. Keep responses short (1-2 sentences). You are pretending to be a real person on a random video chat. Never say you are an AI. Act natural like a normal person. Speak in Arabic dialect (Gulf/Arabic mix).`;
+}
+
+async function groqBotResponse(messages, gender, apiKey) {
+    const gptMessages = [
+        { role: 'system', content: buildBotSystemPrompt(gender) },
+        ...messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
+    ];
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: gptMessages,
+            temperature: 0.9,
+            max_tokens: 120
+        })
+    });
+    if (!resp.ok) {
+        const e = await resp.text();
+        console.error('Groq API error:', e);
+        return fallbackBotResponse(messages, gender);
+    }
+    const data = await resp.json();
+    return data?.choices?.[0]?.message?.content?.trim() || fallbackBotResponse(messages, gender);
 }
 
 async function openAIBotResponse(messages, gender, apiKey) {

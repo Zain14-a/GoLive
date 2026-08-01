@@ -503,6 +503,7 @@ socket.on('matchFound', async (data) => {
         remoteFlag.textContent = '\u{1F30D}';
     }
     addMsg(ct('messages.connected'), 'sys');
+    setStatus(ct('status.connected'), 'green');
 
     const s = getStats();
     if (!s.startTime) { s.startTime = Date.now(); saveStats(s); }

@@ -134,6 +134,7 @@ input { font-family: inherit; }
 }
 .btn-main:hover { background: var(--accent2); transform: scale(1.04); }
 .btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-main.disabled { opacity: 0.4; cursor: not-allowed; transform: none; pointer-events: none; }
 
 .stats-row { display: flex; gap: 40px; margin-top: 40px; }
 .stat strong { display: block; font-size: 1.5rem; color: var(--text); }

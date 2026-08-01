@@ -151,11 +151,15 @@ setInterval(updatePhoneClock, 10000);
 
 // Age check
 ageCheck.addEventListener('change', () => {
-    goBtn.disabled = !ageCheck.checked;
+    goBtn.classList.toggle('disabled', !ageCheck.checked);
 });
 
-goBtn.addEventListener('click', () => {
-    if (!ageCheck.checked) return;
+goBtn.addEventListener('click', (e) => {
+    if (!ageCheck.checked) {
+        e.preventDefault();
+        return;
+    }
+    e.preventDefault();
     const params = new URLSearchParams();
     params.set('gender', genderSel.value);
     params.set('country', countrySel.value);

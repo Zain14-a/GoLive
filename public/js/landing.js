@@ -22,6 +22,37 @@ Lang.buildCountrySelect(countrySel);
 Lang.createLangSelector(document.getElementById('langContainer'));
 Lang.buildSettingsLangList();
 
+// Auto-detect visitor's country and show it
+(async () => {
+    try {
+        const g = await (await fetch('/api/geo')).json();
+        const badge = document.getElementById('geoBadge');
+        if (!badge || !g || !g.country || g.country === 'any') return;
+        const lang = Lang.getCurrent();
+        const data = LANG_DATA[lang] || LANG_DATA.en;
+        const name = (data?.countries && data.countries[g.country]) ||
+                     (FALLBACK_COUNTRIES && FALLBACK_COUNTRIES[g.country]) || g.country;
+        const flags = {
+            JO: '\u{1F1EF}\u{1F1F4}', SA: '\u{1F1F8}\u{1F1E6}', AE: '\u{1F1E6}\u{1F1EA}',
+            EG: '\u{1F1EA}\u{1F1EC}', IQ: '\u{1F1EE}\u{1F1F1}', KW: '\u{1F1F0}\u{1F1FC}',
+            QA: '\u{1F1F6}\u{1F1E6}', BH: '\u{1F1E7}\u{1F1ED}', OM: '\u{1F1F4}\u{1F1F2}',
+            LB: '\u{1F1F1}\u{1F1E7}', SY: '\u{1F1F8}\u{1F1FE}', PS: '\u{1F1F5}\u{1F1F8}',
+            MA: '\u{1F1F2}\u{1F1E6}', DZ: '\u{1F1E9}\u{1F1FF}', TN: '\u{1F1F9}\u{1F1F3}',
+            LY: '\u{1F1F1}\u{1F1FE}', SD: '\u{1F1F1}\u{1F1E9}', YE: '\u{1F1FE}\u{1F1EA}',
+            US: '\u{1F1FA}\u{1F1F8}', GB: '\u{1F1EC}\u{1F1E7}', FR: '\u{1F1EB}\u{1F1F7}',
+            DE: '\u{1F1E9}\u{1F1EA}', IT: '\u{1F1EE}\u{1F1F9}', ES: '\u{1F1EA}\u{1F1F8}',
+            JP: '\u{1F1EF}\u{1F1F5}', KR: '\u{1F1F0}\u{1F1F7}', CN: '\u{1F1E8}\u{1F1F3}',
+            IN: '\u{1F1EE}\u{1F1F3}', TR: '\u{1F1F9}\u{1F1F7}', BR: '\u{1F1E7}\u{1F1F7}',
+            CA: '\u{1F1E8}\u{1F1E6}', AU: '\u{1F1E6}\u{1F1FA}', RU: '\u{1F1F7}\u{1F1FA}',
+            PK: '\u{1F1F5}\u{1F1F0}', BD: '\u{1F1E7}\u{1F1E9}', TH: '\u{1F1F9}\u{1F1ED}',
+            VN: '\u{1F1FB}\u{1F1F3}', PH: '\u{1F1F5}\u{1F1ED}', ID: '\u{1F1EE}\u{1F1E9}',
+            MY: '\u{1F1F2}\u{1F1FE}', SG: '\u{1F1F8}\u{1F1EC}'
+        };
+        badge.textContent = '\u{1F30D} ' + (flags[g.country] || '') + ' ' + name;
+        badge.hidden = false;
+    } catch (e) {}
+})();
+
 // Rebuild language list when page language changes
 window.addEventListener('langChanged', () => {
     Lang.buildSettingsLangList();

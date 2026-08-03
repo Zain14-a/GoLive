@@ -58,6 +58,7 @@ let currentFilter = 'none';
 let filterAnimFrame = null;
 let activeParticles = [];
 let partnerCountry = null;
+let myRealCountry = null;
 
 function ct(key) {
     const keys = ('chat.' + key).split('.');
@@ -418,13 +419,13 @@ function startSearch() {
     showIdle(ct('messages.searching'));
     setStatus(ct('status.searching'), 'red');
     addMsg(ct('messages.searching'), 'sys');
-    socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID });
+    socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID, realCountry: myRealCountry });
 
     clearInterval(searchInterval);
     searchInterval = setInterval(() => {
         if (isSearching && !currentRoomId) {
             console.log('Retrying search...');
-            socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID });
+            socket.emit('findMatch', { gender: myGender, country: myCountry, prefGender: myPrefGender, clientId: CLIENT_ID, realCountry: myRealCountry });
         }
     }, 5000);
 
@@ -497,8 +498,9 @@ socket.on('matchFound', async (data) => {
     clearInterval(searchInterval);
     chatStartTime = Date.now();
     partnerCountry = data.partnerCountry || null;
-    if (data.partnerCountry && COUNTRY_FLAGS[data.partnerCountry]) {
-        remoteFlag.textContent = COUNTRY_FLAGS[data.partnerCountry];
+    const partnerReal = data.partnerRealCountry || partnerCountry;
+    if (partnerReal && COUNTRY_FLAGS[partnerReal]) {
+        remoteFlag.textContent = COUNTRY_FLAGS[partnerReal];
     } else {
         remoteFlag.textContent = '\u{1F30D}';
     }
@@ -673,6 +675,17 @@ socket.on('connect_error', (err) => {
     } else {
         startVideoAnalysis();
     }
+
+    // Auto-detect visitor's country (for flags display)
+    try {
+        const g = await (await fetch('/api/geo')).json();
+        if (g && g.country && g.country !== 'any' && COUNTRY_FLAGS[g.country]) {
+            myRealCountry = g.country;
+            const lf = document.getElementById('localFlag');
+            if (lf) lf.textContent = COUNTRY_FLAGS[g.country];
+        }
+    } catch (e) {}
+
     // Bot always starts — camera or not
     setTimeout(() => {
         startBotAvatar();

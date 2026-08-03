@@ -18,6 +18,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.get('/ping', (req, res) => res.send('ok'));
+
+// ===================== AUTO COUNTRY DETECTION =====================
+const geoCache = new Map();
+app.get('/api/geo', async (req, res) => {
+    const ip = req.ip || '';
+    if (geoCache.has(ip)) return res.json(geoCache.get(ip));
+    try {
+        const r = await fetch(`http://ip-api.com/json/${ip}?fields=status,countryCode,country`);
+        const d = await r.json();
+        const out = d && d.status === 'success'
+            ? { country: d.countryCode, name: d.country }
+            : { country: 'any', name: '' };
+        geoCache.set(ip, out);
+        setTimeout(() => geoCache.delete(ip), 3600000);
+        res.json(out);
+    } catch (e) {
+        res.json({ country: 'any', name: '' });
+    }
+});
 app.post('/api/bot', async (req, res) => {
     try {
         const { messages, gender } = req.body;
@@ -355,6 +374,7 @@ io.on('connection', (socket) => {
 
         user.gender = filters.gender;
         user.country = filters.country;
+        user.realCountry = filters.realCountry || null;
         user.prefGender = filters.prefGender;
         user.clientId = filters.clientId || null;
 
@@ -413,12 +433,14 @@ io.on('connection', (socket) => {
                     roomId,
                     partnerId: partner.id,
                     partnerCountry: partner.country,
+                    partnerRealCountry: partner.realCountry || null,
                     isInitiator: true
                 });
                 partner.socket.emit('matchFound', {
                     roomId,
                     partnerId: socket.id,
                     partnerCountry: user.country,
+                    partnerRealCountry: user.realCountry || null,
                     isInitiator: false
                 });
 
@@ -585,8 +607,8 @@ setInterval(() => {
                 candidateUser.socket.join(roomId);
                 user.roomId = roomId; user.partnerId = candidateUser.id;
                 candidateUser.roomId = roomId; candidateUser.partnerId = user.id;
-                user.socket.emit('matchFound', { roomId, partnerId: candidateUser.id, partnerCountry: candidateUser.country, isInitiator: true });
-                candidateUser.socket.emit('matchFound', { roomId, partnerId: user.id, partnerCountry: user.country, isInitiator: false });
+                user.socket.emit('matchFound', { roomId, partnerId: candidateUser.id, partnerCountry: candidateUser.country, partnerRealCountry: candidateUser.realCountry || null, isInitiator: true });
+                candidateUser.socket.emit('matchFound', { roomId, partnerId: user.id, partnerCountry: user.country, partnerRealCountry: user.realCountry || null, isInitiator: false });
                 console.log(`[QUEUE MATCH] ${user.id} <-> ${candidateUser.id}`);
                 break;
             }

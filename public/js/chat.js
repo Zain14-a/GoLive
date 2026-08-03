@@ -678,8 +678,8 @@ socket.on('connect_error', (err) => {
 
     // Auto-detect visitor's country (for flags display)
     try {
-        const g = await (await fetch('/api/geo')).json();
-        if (g && g.country && g.country !== 'any' && COUNTRY_FLAGS[g.country]) {
+        const g = await detectCountry();
+        if (g && g.country && COUNTRY_FLAGS[g.country]) {
             myRealCountry = g.country;
             const lf = document.getElementById('localFlag');
             if (lf) lf.textContent = COUNTRY_FLAGS[g.country];

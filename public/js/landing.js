@@ -25,13 +25,13 @@ Lang.buildSettingsLangList();
 // Auto-detect visitor's country and show it
 (async () => {
     try {
-        const g = await (await fetch('/api/geo')).json();
+        const res = await detectCountry();
         const badge = document.getElementById('geoBadge');
-        if (!badge || !g || !g.country || g.country === 'any') return;
+        if (!badge || !res) return;
         const lang = Lang.getCurrent();
         const data = LANG_DATA[lang] || LANG_DATA.en;
-        const name = (data?.countries && data.countries[g.country]) ||
-                     (FALLBACK_COUNTRIES && FALLBACK_COUNTRIES[g.country]) || g.country;
+        const name = (data?.countries && data.countries[res.country]) ||
+                     (FALLBACK_COUNTRIES && FALLBACK_COUNTRIES[res.country]) || res.name || res.country;
         const flags = {
             JO: '\u{1F1EF}\u{1F1F4}', SA: '\u{1F1F8}\u{1F1E6}', AE: '\u{1F1E6}\u{1F1EA}',
             EG: '\u{1F1EA}\u{1F1EC}', IQ: '\u{1F1EE}\u{1F1F1}', KW: '\u{1F1F0}\u{1F1FC}',
@@ -48,7 +48,7 @@ Lang.buildSettingsLangList();
             VN: '\u{1F1FB}\u{1F1F3}', PH: '\u{1F1F5}\u{1F1ED}', ID: '\u{1F1EE}\u{1F1E9}',
             MY: '\u{1F1F2}\u{1F1FE}', SG: '\u{1F1F8}\u{1F1EC}'
         };
-        badge.textContent = '\u{1F30D} ' + (flags[g.country] || '') + ' ' + name;
+        badge.textContent = '\u{1F30D} ' + (flags[res.country] || '') + ' ' + name;
         badge.hidden = false;
     } catch (e) {}
 })();

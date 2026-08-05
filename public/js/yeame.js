@@ -1,5 +1,4 @@
-// ===================== YEAME SYSTEM =====================
-// Your Eyes Is My Eyes - Advanced Protection System
+
 
 const Yeame = {
     violations: 0,
@@ -11,7 +10,6 @@ const Yeame = {
     statusEl: null,
     alertTimer: null,
 
-    // ===================== TEXT PROFANITY DATABASE =====================
     badWords: {
         sexual_en: [
             'nude', 'naked', 'sex', 'porn', 'xxx', 'nsfw', 'sexy', 'booty',
@@ -69,7 +67,6 @@ const Yeame = {
         ]
     },
 
-    // ===================== INIT =====================
     init() {
         this.statusEl = document.getElementById('yeameStatus');
         this.updateStatus('active');
@@ -83,7 +80,6 @@ const Yeame = {
         if (badge) badge.className = 'yeame-badge ' + status;
     },
 
-    // ===================== TEXT ANALYSIS =====================
     analyzeText(text) {
         if (!this.isActive) return { safe: true };
         const lower = text.toLowerCase().trim();
@@ -116,7 +112,6 @@ const Yeame = {
         return results;
     },
 
-    // ===================== VIDEO ANALYSIS =====================
     analyzeVideo(videoElement) {
         if (!this.isActive || !videoElement || !videoElement.videoWidth) return;
 
@@ -136,7 +131,6 @@ const Yeame = {
             const imageData = ctx.getImageData(0, 0, sampleW, sampleH);
             const data = imageData.data;
 
-            // 1. Skin color detection
             let skinPixels = 0;
             const totalPixels = sampleW * sampleH;
 
@@ -152,7 +146,6 @@ const Yeame = {
 
             const skinRatio = skinPixels / totalPixels;
 
-            // 2. Motion detection (compare with previous frame)
             let motionScore = 0;
             if (this.prevFrameData) {
                 for (let i = 0; i < data.length; i += 16) {
@@ -165,7 +158,6 @@ const Yeame = {
 
             this.prevFrameData = new Uint8ClampedArray(data);
 
-            // Thresholds
             if (skinRatio > 0.65) {
                 this.triggerViolation('محتوى غير لائق - تم اكتشاف حركات مشبوهة', 3);
                 return 'high';
@@ -179,26 +171,23 @@ const Yeame = {
                 return 'low';
             }
 
-            // All good
             if (skinRatio < 0.15) {
                 this.updateStatus('active');
             }
 
         } catch (e) {
-            // Canvas security error - silently ignore
+
         }
     },
 
     isSkinColor(r, g, b) {
-        // HSV-based skin color detection
+
         const max = Math.max(r, g, b);
         const min = Math.min(r, g, b);
 
-        // Must have enough brightness
         if (max < 80 || min < 15) return false;
         if (max - min < 15) return false;
 
-        // Check RGB ratios for skin tones
         if (r > 95 && g > 40 && b > 20 &&
             r > g && r > b &&
             (r - g) > 15 &&
@@ -206,7 +195,6 @@ const Yeame = {
             return true;
         }
 
-        // HSV ranges for skin
         let h = 0;
         const d = max - min;
         if (d !== 0) {
@@ -227,7 +215,6 @@ const Yeame = {
         return false;
     },
 
-    // ===================== VIOLATIONS =====================
     triggerViolation(message, severity) {
         this.violations++;
         this.updateStatus('danger');
@@ -261,7 +248,6 @@ const Yeame = {
         }, 3000);
     },
 
-    // ===================== CHAT TEXT MODERATION =====================
     moderateIncoming(text) {
         const result = this.analyzeText(text);
         if (!result.safe) {
@@ -282,7 +268,6 @@ const Yeame = {
     }
 };
 
-// Auto-init on load
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => Yeame.init());
 }

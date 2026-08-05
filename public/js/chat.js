@@ -1,6 +1,5 @@
 const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
 
-// Lang init for chat
 document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
 document.documentElement.lang = Lang.getCurrent();
 Lang.apply();
@@ -41,7 +40,6 @@ const myGender = urlParams.get('gender') || 'male';
 const myCountry = urlParams.get('country') || 'any';
 const myPrefGender = urlParams.get('prefGender') || 'any';
 
-// Unique per-browser ID to prevent self-matching
 const CLIENT_ID = localStorage.getItem('golive_clientId') || (function() {
     const id = 'client-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
     localStorage.setItem('golive_clientId', id);
@@ -115,7 +113,6 @@ const RTC_CONFIG = {
     ]
 };
 
-// ===================== STATS =====================
 const STATS_KEY = 'golive_stats';
 function getStats() {
     const d = JSON.parse(localStorage.getItem(STATS_KEY) || 'null');
@@ -182,18 +179,15 @@ function showStats() {
     statsModal.classList.add('show');
 }
 
-// ===================== LEADERBOARD =====================
 function showLeaderboard() {
     socket.emit('getLeaderboard');
 }
 
-// ===================== CONTENT MODERATION (YEAME) =====================
 function checkMessage(text) {
     const result = Yeame.analyzeText(text);
     return !result.safe;
 }
 
-// ===================== FACE FILTERS =====================
 function clearFilterOverlay() {
     if (filterOverlay) filterOverlay.innerHTML = '';
 }
@@ -316,7 +310,6 @@ function setFilter(name) {
     if (activeChip) activeChip.classList.add('active');
 }
 
-// ===================== BASIC HELPERS =====================
 function addMsg(text, type) {
     const el = document.createElement('div');
     el.className = 'msg-el ' + type;
@@ -347,7 +340,6 @@ function showCaption(text) {
     captionBar._timer = setTimeout(() => { captionBar.style.display = 'none'; }, 4000);
 }
 
-// ===================== CAMERA =====================
 async function initCamera() {
     try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -364,7 +356,6 @@ async function initCamera() {
     }
 }
 
-// ===================== WEBRTC =====================
 function createPeerConnection(isInitiator) {
     closePeerConnection();
     peerConnection = new RTCPeerConnection(RTC_CONFIG);
@@ -410,7 +401,6 @@ function closePeerConnection() {
     remoteVideo.srcObject = null;
 }
 
-// ===================== SEARCH =====================
 let searchInterval = null;
 let searchTimer = null;
 
@@ -429,7 +419,6 @@ function startSearch() {
         }
     }, 5000);
 
-    // Show bot invite after 12s of searching
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
         if (isSearching && !currentRoomId) {
@@ -480,7 +469,6 @@ function handleStop() {
     document.getElementById('botInvite')?.classList.remove('show');
 }
 
-// ===================== SOCKET EVENTS =====================
 socket.on('onlineCount', () => {});
 
 socket.on('searching', () => {
@@ -571,7 +559,6 @@ socket.on('leaderboard', (list) => {
     leaderModal.classList.add('show');
 });
 
-// ===================== BUTTON EVENTS =====================
 skipBtn.addEventListener('click', handleSkip);
 stopBtn.addEventListener('click', handleStop);
 
@@ -587,16 +574,13 @@ camBtn.addEventListener('click', () => {
     camBtn.classList.toggle('active', isCamOff);
 });
 
-// ===================== MESSAGE SEND =====================
 sendBtn.addEventListener('click', () => {
     const text = msgInput.value.trim();
     if (!text) return;
 
-    // Yeame moderation applies in all modes (bot or live partner)
     const moderated = Yeame.moderateOutgoing(text);
     if (moderated === null) return;
 
-    // Bot mode — send to bot API
     if (botActive && !currentRoomId) {
         addMsg(moderated, 'sent');
         msgInput.value = '';
@@ -637,7 +621,6 @@ document.querySelectorAll('.filter-chip').forEach(chip => {
     chip.addEventListener('click', () => setFilter(chip.dataset.filter));
 });
 
-// ===================== YEAME VIDEO ANALYSIS =====================
 function startVideoAnalysis() {
     setInterval(() => {
         if (remoteVideo && remoteVideo.srcObject && !remoteVideo.paused) {
@@ -646,7 +629,6 @@ function startVideoAnalysis() {
     }, 2500);
 }
 
-// ===================== INIT =====================
 setInterval(() => { fetch('/ping').catch(() => {}); }, 60000);
 
 socket.on('connect', () => {
@@ -676,7 +658,6 @@ socket.on('connect_error', (err) => {
         startVideoAnalysis();
     }
 
-    // Auto-detect visitor's country (for flags display)
     try {
         const g = await detectCountry();
         if (g && g.country && COUNTRY_FLAGS[g.country]) {
@@ -686,7 +667,6 @@ socket.on('connect_error', (err) => {
         }
     } catch (e) {}
 
-    // Bot always starts — camera or not
     setTimeout(() => {
         startBotAvatar();
         if (ok) startSearch();
@@ -696,7 +676,6 @@ socket.on('connect_error', (err) => {
     pointsDisplay.textContent = s.points;
 })();
 
-// ===================== THEME TOGGLE =====================
 (function() {
     const saved = localStorage.getItem('golive_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
@@ -710,7 +689,6 @@ socket.on('connect_error', (err) => {
     });
 })();
 
-// ===================== AI FACE FILTER =====================
 let aiFilterActive = false;
 let faceDetectionInterval = null;
 const faceCanvas = document.createElement('canvas');
@@ -809,7 +787,6 @@ aiBtn.addEventListener('click', async () => {
     }
 });
 
-// ===================== AVATAR + AI BOT =====================
 let avatarRenderer = null;
 let avatarCanvas = null;
 let botActive = false;
@@ -840,7 +817,6 @@ function startBotAvatar() {
     botActive = true;
     botConversation = [{ role: 'user', text: 'السلام عليكم' }];
 
-    // Typing indicator overlay
     let typing = document.getElementById('botTypingIndicator');
     if (!typing) {
         typing = document.createElement('div');

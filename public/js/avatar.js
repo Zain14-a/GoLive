@@ -88,7 +88,6 @@ class AvatarRenderer {
         const w = this.w, h = this.h;
         ctx.clearRect(0, 0, w, h);
 
-        // Background gradient
         const grad = ctx.createRadialGradient(w / 2, h * 0.3, 0, w / 2, h * 0.3, w * 0.8);
         grad.addColorStop(0, '#1a1a2e');
         grad.addColorStop(1, '#0f0f1a');
@@ -103,13 +102,11 @@ class AvatarRenderer {
         const scale = Math.min(w, h) / 280;
         ctx.scale(scale, scale);
 
-        // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.beginPath();
         ctx.ellipse(0, 80, 70, 20, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Neck
         ctx.fillStyle = this.skinColors.shadow;
         ctx.beginPath();
         ctx.moveTo(-18, 50);
@@ -118,7 +115,6 @@ class AvatarRenderer {
         ctx.lineTo(18, 50);
         ctx.fill();
 
-        // Shoulders + clothes
         ctx.fillStyle = this.shirtColor;
         ctx.beginPath();
         ctx.moveTo(-60, 75);
@@ -137,7 +133,7 @@ class AvatarRenderer {
             ctx.lineTo(30, 105);
             ctx.stroke();
         } else {
-            // Collar detail
+
             ctx.fillStyle = '#b83858';
             ctx.beginPath();
             ctx.moveTo(-20, 78);
@@ -147,13 +143,11 @@ class AvatarRenderer {
             ctx.fill();
         }
 
-        // Head
         ctx.fillStyle = this.skinColors.light;
         ctx.beginPath();
         ctx.ellipse(0, -5, 52, 62, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Hair
         ctx.fillStyle = this.hairColor;
         if (this.gender === 'male') {
             ctx.beginPath();
@@ -162,7 +156,7 @@ class AvatarRenderer {
             ctx.beginPath();
             ctx.rect(-54, -60, 108, 18);
             ctx.fill();
-            // Side hair
+
             ctx.beginPath();
             ctx.ellipse(-50, -20, 8, 40, -0.1, 0, Math.PI * 2);
             ctx.fill();
@@ -173,14 +167,14 @@ class AvatarRenderer {
             ctx.beginPath();
             ctx.ellipse(0, -58, 58, 38, 0, Math.PI, Math.PI * 2);
             ctx.fill();
-            // Long hair sides
+
             ctx.beginPath();
             ctx.ellipse(-55, -10, 12, 55, -0.2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
             ctx.ellipse(55, -10, 12, 55, 0.2, 0, Math.PI * 2);
             ctx.fill();
-            // Hair strand
+
             for (let i = -40; i <= 40; i += 15) {
                 ctx.beginPath();
                 ctx.moveTo(i, -65);
@@ -192,7 +186,6 @@ class AvatarRenderer {
             }
         }
 
-        // Eyebrows
         ctx.strokeStyle = this.hairColor;
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
@@ -204,7 +197,6 @@ class AvatarRenderer {
         ctx.quadraticCurveTo(15, browY - 4, 5, browY);
         ctx.stroke();
 
-        // Eyes
         const eyeY = -16;
         const eyeSpacing = 20;
         for (let side = -1; side <= 1; side += 2) {
@@ -216,7 +208,7 @@ class AvatarRenderer {
 
             const blink = this.blinkDuration > 0 ? Math.min(1, this.blinkDuration * 5) : 0;
             if (blink > 0.5) {
-                // Closed eye
+
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -224,7 +216,7 @@ class AvatarRenderer {
                 ctx.lineTo(ex + 11, eyeY);
                 ctx.stroke();
             } else {
-                // Iris
+
                 const irisR = 6 - blink * 6;
                 if (irisR > 0.5) {
                     ctx.fillStyle = this.gender === 'male' ? '#3d2b1f' : '#4a6741';
@@ -232,13 +224,11 @@ class AvatarRenderer {
                     ctx.arc(ex + this.eyeLookX * 0.3, eyeY + this.eyeLookY * 0.3, irisR, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Pupil
                     ctx.fillStyle = '#111';
                     ctx.beginPath();
                     ctx.arc(ex + this.eyeLookX * 0.4, eyeY + this.eyeLookY * 0.4, irisR * 0.5, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Highlight
                     ctx.fillStyle = '#fff';
                     ctx.beginPath();
                     ctx.arc(ex + this.eyeLookX * 0.3 + 3, eyeY + this.eyeLookY * 0.3 - 3, 2, 0, Math.PI * 2);
@@ -247,7 +237,6 @@ class AvatarRenderer {
             }
         }
 
-        // Nose
         ctx.fillStyle = this.skinColors.mid;
         ctx.beginPath();
         ctx.ellipse(0, -2, 4, 7, 0, 0, Math.PI * 2);
@@ -257,7 +246,6 @@ class AvatarRenderer {
         ctx.ellipse(0, 3, 2, 3, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Smile lines
         ctx.strokeStyle = this.skinColors.shadow;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -267,7 +255,6 @@ class AvatarRenderer {
         ctx.quadraticCurveTo(10, 4, 0, 4);
         ctx.stroke();
 
-        // Mouth
         const mouthOpen = Math.abs(Math.sin(this.talkPhase)) * (this.isTalking ? 7 : 0);
         ctx.fillStyle = '#8b3a4a';
         ctx.beginPath();
@@ -280,14 +267,12 @@ class AvatarRenderer {
             ctx.rect(-8, 18, 16, mouthOpen * 0.6);
             ctx.fill();
 
-            // Teeth
             ctx.fillStyle = '#eee';
             ctx.fillRect(-8, 18, 3, 4);
             ctx.fillRect(-3, 18, 3, 4);
             ctx.fillRect(2, 18, 3, 4);
         }
 
-        // Lips
         ctx.strokeStyle = '#b84a5a';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -297,7 +282,6 @@ class AvatarRenderer {
         ctx.arc(0, 22, 10, Math.PI + 0.2, -0.2);
         ctx.stroke();
 
-        // Cheek blush (female)
         if (this.gender === 'female') {
             ctx.fillStyle = 'rgba(255, 100, 120, 0.15)';
             ctx.beginPath();
@@ -310,7 +294,6 @@ class AvatarRenderer {
 
         ctx.restore();
 
-        // Name tag
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         const nx = w / 2 - 60, ny = h - 32, nw = 120, nh = 24, nr = 12;
         ctx.beginPath();

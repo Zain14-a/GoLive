@@ -14,7 +14,6 @@ const mockNextBtn = document.getElementById('mockNextBtn');
 const phoneImages = ['img/image-4.png', 'img/1.jpg', 'img/2.jpg', 'img/3.jpg'];
 let currentImgIndex = 0;
 
-// Language init
 document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
 document.documentElement.lang = Lang.getCurrent();
 Lang.apply();
@@ -22,7 +21,6 @@ Lang.buildCountrySelect(countrySel);
 Lang.createLangSelector(document.getElementById('langContainer'));
 Lang.buildSettingsLangList();
 
-// Auto-detect visitor's country and show it
 (async () => {
     try {
         const res = await detectCountry();
@@ -53,13 +51,11 @@ Lang.buildSettingsLangList();
     } catch (e) {}
 })();
 
-// Rebuild language list when page language changes
 window.addEventListener('langChanged', () => {
     Lang.buildSettingsLangList();
     updatePhoneClock();
 });
 
-// Phone image cycling
 if (mockNextBtn) {
     mockNextBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -68,7 +64,6 @@ if (mockNextBtn) {
     });
 }
 
-// Phone app navigation
 document.querySelectorAll('.phone-app').forEach(app => {
     app.addEventListener('click', () => {
         const target = app.dataset.app;
@@ -88,7 +83,6 @@ document.querySelectorAll('.phone-back').forEach(btn => {
     });
 });
 
-// Lin plan selection
 document.querySelectorAll('.lin-plan').forEach(plan => {
     plan.addEventListener('click', () => {
         document.querySelectorAll('.lin-plan').forEach(p => p.classList.remove('selected'));
@@ -96,7 +90,6 @@ document.querySelectorAll('.lin-plan').forEach(plan => {
     });
 });
 
-// Gallery PIN lock
 const GALLERY_PIN = '1234';
 let enteredPin = '';
 const pinDots = document.querySelectorAll('#pinDots .pin-dot');
@@ -142,7 +135,6 @@ document.getElementById('pinDel').addEventListener('click', () => {
     pinError.classList.remove('show');
 });
 
-// Reset gallery lock when going back
 document.querySelectorAll('.phone-back').forEach(btn => {
     btn.addEventListener('click', () => {
         if (btn.dataset.back === 'home') {
@@ -155,7 +147,6 @@ document.querySelectorAll('.phone-back').forEach(btn => {
     });
 });
 
-// Phone clock
 function updatePhoneClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
@@ -180,7 +171,6 @@ function updatePhoneClock() {
 updatePhoneClock();
 setInterval(updatePhoneClock, 10000);
 
-// Age check
 ageCheck.addEventListener('change', () => {
     goBtn.classList.toggle('disabled', !ageCheck.checked);
 });
@@ -209,7 +199,6 @@ setInterval(() => {
     todayCount.textContent = today.toLocaleString();
 }, 4000);
 
-// ===================== THEME TOGGLE =====================
 (function() {
     const saved = localStorage.getItem('golive_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');

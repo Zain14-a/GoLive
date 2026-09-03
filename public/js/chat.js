@@ -57,6 +57,8 @@ let filterAnimFrame = null;
 let activeParticles = [];
 let partnerCountry = null;
 let myRealCountry = null;
+let pendingCandidates = [];
+let iceRestartAttempted = false;
 
 function ct(key) {
     const keys = ('chat.' + key).split('.');
@@ -359,6 +361,8 @@ async function initCamera() {
 function createPeerConnection(isInitiator) {
     closePeerConnection();
     peerConnection = new RTCPeerConnection(RTC_CONFIG);
+    pendingCandidates = [];
+    iceRestartAttempted = false;
 
     if (localStream) {
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
@@ -377,10 +381,33 @@ function createPeerConnection(isInitiator) {
         }
     };
 
+    peerConnection.onicecandidateerror = (event) => {
+        console.warn('ICE candidate error:', event.errorCode, event.errorText);
+    };
+
     peerConnection.onconnectionstatechange = () => {
         const state = peerConnection.connectionState;
-        if (state === 'connected') setStatus(ct('status.connected'), 'green');
-        else if (state === 'disconnected' || state === 'failed') setStatus(ct('status.disconnected'), 'red');
+        if (state === 'connected') {
+            setStatus(ct('status.connected'), 'green');
+            iceRestartAttempted = false;
+        } else if (state === 'disconnected') {
+            setStatus(ct('status.disconnected'), 'red');
+            if (!iceRestartAttempted && peerConnection) {
+                iceRestartAttempted = true;
+                peerConnection.restartIce();
+                setTimeout(() => {
+                    if (peerConnection && peerConnection.connectionState !== 'connected') {
+                        socket.emit('signal', { signal: { type: 'ice-restart' } });
+                    }
+                }, 3000);
+            }
+        } else if (state === 'failed') {
+            setStatus(ct('status.disconnected'), 'red');
+            if (!iceRestartAttempted && peerConnection) {
+                iceRestartAttempted = true;
+                peerConnection.restartIce();
+            }
+        }
     };
 
     if (isInitiator) {
@@ -399,6 +426,7 @@ function createPeerConnection(isInitiator) {
 function closePeerConnection() {
     if (peerConnection) { peerConnection.close(); peerConnection = null; }
     remoteVideo.srcObject = null;
+    pendingCandidates = [];
 }
 
 let searchInterval = null;
@@ -490,7 +518,7 @@ socket.on('matchFound', async (data) => {
     if (partnerReal && COUNTRY_FLAGS[partnerReal]) {
         remoteFlag.textContent = COUNTRY_FLAGS[partnerReal];
     } else {
-        remoteFlag.textContent = '\u{1F30D}';
+        remoteFlag.textContent = '🌍';
     }
     addMsg(ct('messages.connected'), 'sys');
     setStatus(ct('status.connected'), 'green');
@@ -498,7 +526,17 @@ socket.on('matchFound', async (data) => {
     const s = getStats();
     if (!s.startTime) { s.startTime = Date.now(); saveStats(s); }
 
+    // Create peer connection and handle signaling
     createPeerConnection(data.isInitiator);
+
+    if (data.isInitiator) {
+        // Initiator will create offer via onnegotiationneeded
+        setStatus(ct('status.initializing'), 'yellow');
+    } else {
+        // Non-initiator: wait for remote offer via socket 'signal' event
+        // The signaling handler below will handle setting remote description
+        setStatus(ct('status.connecting'), 'yellow');
+    }
 });
 
 socket.on('signal', async (data) => {
@@ -506,13 +544,31 @@ socket.on('signal', async (data) => {
     try {
         if (data.signal.type === 'offer') {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(data.signal.sdp));
+            for (const c of pendingCandidates) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+            }
+            pendingCandidates = [];
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
             socket.emit('signal', { signal: { type: 'answer', sdp: peerConnection.localDescription } });
         } else if (data.signal.type === 'answer') {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(data.signal.sdp));
+            for (const c of pendingCandidates) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+            }
+            pendingCandidates = [];
         } else if (data.signal.type === 'ice-candidate') {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(data.signal.candidate));
+            if (peerConnection.remoteDescription) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.signal.candidate));
+            } else {
+                pendingCandidates.push(data.signal.candidate);
+            }
+        } else if (data.signal.type === 'ice-restart') {
+            if (peerConnection && peerConnection.connectionState !== 'connected') {
+                const offer = await peerConnection.createOffer({ iceRestart: true });
+                await peerConnection.setLocalDescription(offer);
+                socket.emit('signal', { signal: { type: 'offer', sdp: peerConnection.localDescription } });
+            }
         }
     } catch (e) { console.error('Signal error:', e); }
 });
@@ -643,6 +699,9 @@ socket.on('disconnect', () => {
     console.log('Disconnected from server');
     setStatus(ct('status.disconnected'), 'red');
     addMsg(ct('messages.disconnected'), 'sys');
+    closePeerConnection();
+    pendingCandidates = [];
+    iceRestartAttempted = false;
 });
 
 socket.on('connect_error', (err) => {

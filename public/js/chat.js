@@ -1,4 +1,4 @@
-const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
+﻿const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
 
 document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
 document.documentElement.lang = Lang.getCurrent();
@@ -796,7 +796,7 @@ function startAIFilter() {
                 const eDist = Math.abs(rightEye[3].x - leftEye[0].x);
                 const gW = eDist * 1.8;
                 const gH = gW * 0.4;
-                ctx.strokeStyle = '#ff3b5c';
+                ctx.strokeStyle = '#e8364e';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(eyeCX - gW / 2, eyeCY - gH / 2, gW, gH);
                 ctx.beginPath();
@@ -811,7 +811,7 @@ function startAIFilter() {
                 ctx.stroke();
                 const topY = jaw[0].y;
                 const headW = Math.abs(jaw[16].x - jaw[0].x);
-                ctx.fillStyle = '#ff3b5c';
+                ctx.fillStyle = '#e8364e';
                 ctx.fillRect(eyeCX - headW * 0.4, topY - headW * 0.5, headW * 0.8, headW * 0.3);
                 ctx.fillRect(eyeCX - headW * 0.6, topY - headW * 0.5, headW * 1.2, headW * 0.1);
                 ctx.restore();
@@ -964,3 +964,4 @@ document.getElementById('botSendBtn')?.addEventListener('click', () => {
 document.getElementById('botInput')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('botSendBtn')?.click();
 });
+

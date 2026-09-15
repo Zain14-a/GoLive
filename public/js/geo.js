@@ -7,7 +7,7 @@ async function detectCountry() {
         }
     } catch (e) {}
     try {
-        const g = await (await fetch('/api/geo')).json();
+        const g = await (await fetch(BACKEND_URL + '/api/geo')).json();
         if (g && g.country && g.country !== 'any') {
             return { country: g.country, name: g.name || '' };
         }

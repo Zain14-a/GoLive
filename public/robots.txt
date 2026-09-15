@@ -1,3 +1,4 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
-Sitemap: https://golive-1-tgzr.onrender.com/sitemap.xml
+Sitemap: https://zain14-a.github.io/GoLive/sitemap.xml
+

@@ -6,6 +6,13 @@ const path = require('path');
 
 const app = express();
 app.set('trust proxy', 1);
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
+});
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: '*' },
@@ -558,7 +565,8 @@ server.listen(PORT, '0.0.0.0', () => {
 setInterval(() => {
     if (waitingQueue.length < 2) return;
     console.log(`[QUEUE CHECK] ${waitingQueue.length} waiting`);
-    for (let i = waitingQueue.length - 1; i >= 0; i--) {
+    let matched = false;
+    for (let i = waitingQueue.length - 1; i >= 0 && !matched; i--) {
         const entry = waitingQueue[i];
         const user = onlineUsers.get(entry.id);
         if (!user) { waitingQueue.splice(i, 1); continue; }
@@ -584,8 +592,16 @@ setInterval(() => {
                 user.socket.emit('matchFound', { roomId, partnerId: candidateUser.id, partnerCountry: candidateUser.country, partnerRealCountry: candidateUser.realCountry || null, isInitiator: true });
                 candidateUser.socket.emit('matchFound', { roomId, partnerId: user.id, partnerCountry: user.country, partnerRealCountry: user.realCountry || null, isInitiator: false });
                 console.log(`[QUEUE MATCH] ${user.id} <-> ${candidateUser.id}`);
+                matched = true;
                 break;
             }
         }
+    }
+    if (!matched) {
+        // Update lastSearch for all waiting users
+        waitingQueue.forEach(q => {
+            const u = onlineUsers.get(q.id);
+            if (u) u.lastSearch = Date.now();
+        });
     }
 }, 3000);

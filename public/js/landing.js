@@ -1,4 +1,4 @@
-const socket = io();
+const socket = BACKEND_URL ? io(BACKEND_URL) : io();
 
 const goBtn = document.getElementById('goBtn');
 const ageCheck = document.getElementById('ageCheck');
@@ -189,7 +189,7 @@ goBtn.addEventListener('click', (e) => {
         const cur = (typeof Lang !== 'undefined' && Lang.getCurrent) ? Lang.getCurrent() : null;
         if (cur) params.set('lang', cur);
     } catch (e) {}
-    window.location.href = '/chat?' + params.toString();
+    window.location.href = 'chat.html?' + params.toString();
 });
 
 socket.on('onlineCount', (count) => {

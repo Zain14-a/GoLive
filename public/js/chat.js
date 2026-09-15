@@ -1,4 +1,5 @@
-﻿const socket = io({ reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] });
+﻿const socketOpts = { reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] };
+const socket = BACKEND_URL ? io(BACKEND_URL, socketOpts) : io(socketOpts);
 
 document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
 document.documentElement.lang = Lang.getCurrent();
@@ -685,7 +686,7 @@ function startVideoAnalysis() {
     }, 2500);
 }
 
-setInterval(() => { fetch('/ping').catch(() => {}); }, 60000);
+setInterval(() => { fetch(BACKEND_URL + '/ping').catch(() => {}); }, 60000);
 
 socket.on('connect', () => {
     console.log('Connected to server');
@@ -913,7 +914,7 @@ async function sendBotMessage(userText) {
 
     let reply = '';
     try {
-        const resp = await fetch('/api/bot', {
+        const resp = await fetch(BACKEND_URL + '/api/bot', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

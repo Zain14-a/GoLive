@@ -1,0 +1,4 @@
+﻿User-agent: *
+Allow: /
+Sitemap: https://zain14-a.github.io/GoLive/sitemap.xml
+

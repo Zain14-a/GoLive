@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="NffgnXc5qaWVSnIXubORcCETaHb8XuHOn1a_ZDv1dKc" />
+    <title>GoLive - شات فيديو عشوائي فوري | جو لايف</title>
+    <meta name="description" content="GoLive (جو لايف) - ابدأ محادثة فيديو عشوائية فورًا مع ناس من كل العالم، تعارف مباشر مجاني بدون تسجيل.">
+    <link rel="canonical" href="https://zain14-a.github.io/GoLive/chat.html">
+    <meta property="og:title" content="GoLive - شات فيديو عشوائي فوري | جو لايف">
+    <meta property="og:description" content="محادثة فيديو عشوائية فورًا، تعارف مباشر مجاني بدون تسجيل.">
+    <meta property="og:url" content="https://zain14-a.github.io/GoLive/chat.html">
+    <meta property="og:type" content="website">
+    <link rel="alternate" hreflang="x-default" href="https://zain14-a.github.io/GoLive/chat.html">
+    <link rel="alternate" hreflang="ar" href="https://zain14-a.github.io/GoLive/chat.html?lang=ar">
+    <link rel="alternate" hreflang="en" href="https://zain14-a.github.io/GoLive/chat.html?lang=en">
+    <link rel="alternate" hreflang="tr" href="https://zain14-a.github.io/GoLive/chat.html?lang=tr">
+    <link rel="alternate" hreflang="fr" href="https://zain14-a.github.io/GoLive/chat.html?lang=fr">
+    <link rel="alternate" hreflang="es" href="https://zain14-a.github.io/GoLive/chat.html?lang=es">
+    <link rel="alternate" hreflang="pt" href="https://zain14-a.github.io/GoLive/chat.html?lang=pt">
+    <link rel="alternate" hreflang="hi" href="https://zain14-a.github.io/GoLive/chat.html?lang=hi">
+    <link rel="alternate" hreflang="ur" href="https://zain14-a.github.io/GoLive/chat.html?lang=ur">
+    <link rel="alternate" hreflang="he" href="https://zain14-a.github.io/GoLive/chat.html?lang=he">
+    <link rel="alternate" hreflang="ru" href="https://zain14-a.github.io/GoLive/chat.html?lang=ru">
+    <link rel="alternate" hreflang="de" href="https://zain14-a.github.io/GoLive/chat.html?lang=de">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230e0e12' width='100' height='100' rx='20'/><text xml:space='preserve' x='50' y='70' font-size='52' font-weight='bold' fill='%23e8e8ec' text-anchor='middle' font-family='sans-serif' style='direction:ltr'>Go<tspan fill='%23e8364e'>Li</tspan></text></svg>" type="image/svg+xml">
+</head>
+<body class="chat-body">
+    <div class="chat-wrap">
+        <div class="chat-topbar">
+            <a href="./" class="back-link">&rarr;</a>
+            <a href="./" class="topbar-title" dir="ltr">Go<span>Live</span></a>
+            <div id="langContainerChat" class="lang-container lang-container-chat"></div>
+            <div class="topbar-status">
+                <span class="pulse-dot" id="statusDot"></span>
+                <span id="statusLabel" data-i18n-chat="status.connecting">جاري الاتصال...</span>
+            </div>
+            <div class="topbar-points" id="topbarPoints" title="نقاطك">
+                <span class="points-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                <span id="pointsDisplay">0</span>
+            </div>
+            <div class="yeame-badge" id="yeameBadge" title="Yeame - نظام الحماية">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span>Yeame</span>
+                <span class="yeame-status" id="yeameStatus"></span>
+            </div>
+            <button id="themeToggleChat" class="theme-btn" title="الوضع الليلي/النهاري">
+                <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <button id="statsBtn" class="topbar-icon" title="إحصائياتي"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></button>
+            <button id="reportBtn" class="topbar-report" title="إبلاغ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 19H2L12 2z"></path><line x1="12" y1="8" x2="12" y2="14"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></button>
+        </div>
+
+        <div class="chat-main">
+            <div class="video-area">
+                <div class="video-block remote-block" id="remoteBlock">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-idle" id="remoteIdle">
+                        <div class="search-spinner"></div>
+                        <p id="idleText" data-i18n-chat="status.searching">جاري البحث عن شخص...</p>
+                    </div>
+                    <span class="video-flag" id="remoteFlag"></span>
+                    <div class="caption-bar" id="captionBar"></div>
+                </div>
+                <div class="video-block local-block">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                    <div class="filter-overlay" id="filterOverlay"></div>
+                    <span class="video-flag" id="localFlag"></span>
+                    <span class="video-tag" data-i18n-chat="status.you">أنت</span>
+                </div>
+            </div>
+
+            <div class="filters-bar" id="filtersBar">
+                <button class="filter-chip active" data-filter="none" data-i18n-chat="filters.none">❌ بدون</button>
+                <button class="filter-chip" data-filter="cool" data-i18n-chat="filters.cool">😎 نظارات</button>
+                <button class="filter-chip" data-filter="heart" data-i18n-chat="filters.heart">❤️ قلوب</button>
+                <button class="filter-chip" data-filter="star" data-i18n-chat="filters.star">⭐ نجوم</button>
+                <button class="filter-chip" data-filter="fire" data-i18n-chat="filters.fire">🔥 نار</button>
+                <button class="filter-chip" data-filter="crown" data-i18n-chat="filters.crown">👑 تاج</button>
+                <button class="filter-chip" data-filter="rainbow" data-i18n-chat="filters.rainbow">🌈 قوس قزح</button>
+                <button class="filter-chip" data-filter="snow" data-i18n-chat="filters.snow">❄️ ثلج</button>
+                <button class="filter-chip" data-filter="party" data-i18n-chat="filters.party">🎉 حفلة</button>
+            </div>
+
+            <div class="chat-bottom">
+                <div class="msg-box" id="msgBox">
+                    <div class="msg-welcome" data-i18n-chat="chat.welcome">مرحبا بك في GoLive. ابدأ بالمحادثة!</div>
+                </div>
+                <div class="msg-input-row">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالة..." maxlength="300" data-i18n-placeholder-chat="chat.placeholder">
+                    <button id="sendBtn" class="send-icon">&#10148;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-toolbar">
+            <button id="skipBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                <span data-i18n-chat="toolbar.next">التالي</span>
+            </button>
+            <button id="stopBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1"></rect></svg>
+                <span data-i18n-chat="toolbar.stop">إيقاف</span>
+            </button>
+            <button id="muteBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                <span data-i18n-chat="toolbar.mute">كتم</span>
+            </button>
+            <button id="camBtn" class="tool-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                <span data-i18n-chat="toolbar.camera">الكاميرا</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="statsModal">
+        <div class="modal-box">
+            <h3>&#128200; <span data-i18n-chat="stats.title"> إحصائياتي</span></h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val" id="statChats">0</div>
+                    <div class="stat-lbl" data-i18n-chat="stats.chats">محادثة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statMinutes">0</div>
+                    <div class="stat-lbl" data-i18n-chat="stats.minutes">دقيقة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statCountries">0</div>
+                    <div class="stat-lbl" data-i18n-chat="stats.countries">بلد</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="statPoints">0</div>
+                    <div class="stat-lbl" data-i18n-chat="stats.points">نقطة</div>
+                </div>
+            </div>
+            <div class="stat-level">
+                <span class="level-label" data-i18n-chat="stats.level">المستوى</span>
+                <span class="level-val" id="statLevel">1 - مبتدئ</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <h4 style="margin-top:16px;margin-bottom:8px;font-size:0.9rem;color:var(--text2)" data-i18n-chat="stats.visited">البلود اللي زرتها</h4>
+            <div class="country-tags" id="countryTags"></div>
+            <div class="modal-btns">
+                <button id="closeStats" class="mbtn cancel" data-i18n-chat="stats.close">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="leaderModal">
+        <div class="modal-box">
+            <h3>&#127942; <span data-i18n-chat="leader.title">لوحة المتصدرين</span></h3>
+            <div class="leader-list" id="leaderList"></div>
+            <div class="modal-btns">
+                <button id="closeLeader" class="mbtn cancel" data-i18n-chat="leader.close">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="reportModal">
+        <div class="modal-box">
+            <h3 data-i18n-chat="report.title">إبلاغ عن مستخدم</h3>
+            <div class="report-list">
+                <label><input type="radio" name="rpt" value="nude"> <span data-i18n-chat="report.nude">محتوى غير لائق</span></label>
+                <label><input type="radio" name="rpt" value="spam"> <span data-i18n-chat="report.spam">سبام</span></label>
+                <label><input type="radio" name="rpt" value="kid"> <span data-i18n-chat="report.kid">مستخدم أقل من 18</span></label>
+                <label><input type="radio" name="rpt" value="abuse"> <span data-i18n-chat="report.abuse">مضايقة</span></label>
+            </div>
+            <div class="modal-btns">
+                <button id="cancelReport" class="mbtn cancel" data-i18n-chat="report.cancel">إلغاء</button>
+                <button id="submitReport" class="mbtn submit" data-i18n-chat="report.submit">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-warning" id="contentWarning">
+        <div class="warning-box">
+            <span>&#128680;</span>
+            <p data-i18n-chat="warning.text">تم اكتشاف محتوى مخالف. تم قطع المحادثة تلقائياً.</p>
+            <button id="warningOk" class="mbtn submit" data-i18n-chat="warning.ok">فهمت</button>
+        </div>
+    </div>
+
+    <div class="yeame-alert" id="yeameAlert">
+        <div class="yeame-alert-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <div>
+                <strong id="yeameAlertTitle">Yeame</strong>
+                <p id="yeameAlertText">تم اكتشاف محتوى مخالف</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bot-invite" id="botInvite">
+        <div class="bot-invite-inner">
+            <svg class="bot-invite-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2" ry="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="4" r="2"></circle><path d="M9 13h.01M15 13h.01"></path></svg>
+            <div>
+                <strong>AI Bot</strong>
+                <p>تحدث مع البوت الذكي لحين العثور على شخص</p>
+            </div>
+            <button id="startBotBtn" class="bot-start-btn">ابدأ</button>
+        </div>
+    </div>
+
+    <div class="bot-modal" id="botModal">
+        <div class="bot-header">
+            <svg class="bot-invite-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2" ry="2"></rect><path d="M12 8V4"></path><circle cx="12" cy="4" r="2"></circle><path d="M9 13h.01M15 13h.01"></path></svg>
+            <span>AI Bot</span>
+            <button id="closeBotBtn" class="bot-close">&times;</button>
+        </div>
+        <div class="bot-messages" id="botMessages">
+            <div class="bot-msg bot">مرحباً! أنا بوت GoLive الذكي. اسألني أي شيء!</div>
+        </div>
+        <div class="bot-input-row">
+            <input type="text" id="botInput" placeholder="اكتب رسالة للبوت..." maxlength="200">
+            <button id="botSendBtn" class="send-icon">&#10148;</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/lang.js"></script>
+    <script src="js/geo.js"></script>
+    <script src="js/yeame.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>
+
+
+

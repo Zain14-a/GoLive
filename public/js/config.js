@@ -1,1 +1,1 @@
-const BACKEND_URL = location.hostname.endsWith('github.io') ? 'https://REPLACE-WITH-YOUR-HF-SPACE-URL' : '';
+const BACKEND_URL = location.hostname.endsWith('github.io') ? 'https://golive-1-tgzr.onrender.com' : '';

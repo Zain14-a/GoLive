@@ -185,6 +185,10 @@ goBtn.addEventListener('click', (e) => {
     params.set('gender', genderSel.value);
     params.set('country', countrySel.value);
     params.set('prefGender', prefGenderSel.value);
+    try {
+        const cur = (typeof Lang !== 'undefined' && Lang.getCurrent) ? Lang.getCurrent() : null;
+        if (cur) params.set('lang', cur);
+    } catch (e) {}
     window.location.href = '/chat?' + params.toString();
 });
 

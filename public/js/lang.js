@@ -20,6 +20,13 @@ const Lang = (() => {
     }
 
     function getCurrent() {
+        try {
+            const qp = new URLSearchParams(window.location.search).get('lang');
+            if (qp && LANG_DATA[qp]) {
+                localStorage.setItem(LANG_KEY, qp);
+                return qp;
+            }
+        } catch (e) {}
         const saved = localStorage.getItem(LANG_KEY);
         if (saved && LANG_DATA[saved]) return saved;
         const detected = detectFromDevice();

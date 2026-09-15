@@ -121,6 +121,17 @@ const LANG_DATA = {
             step3Title: 'تحدث أو انتقل',
             step3Desc: 'إذا ما عجبك الشخص اضغط التالي'
         },
+        faq: {
+            title: 'الأسئلة الشائعة',
+            q1: 'هل GoLive مجاني؟',
+            a1: 'نعم، GoLive مجاني تماماً ولا يحتاج تسجيل. اسمح للكاميرا واضغط ابدأ.',
+            q2: 'هل أحتاج إنشاء حساب؟',
+            a2: 'لا، لا حاجة لأي حساب. افتح الموقع وابدأ المحادثة فوراً.',
+            q3: 'كيف أختار البلد أو الجنس؟',
+            a3: 'من الصفحة الرئيسية اختر البلد والجنس قبل الضغط على زر ابدأ.',
+            q4: 'هل المحادثات آمنة؟',
+            a4: 'نعم، يوجد نظام إبلاغ وحظر، ويمكنك تخطي أي شخص بزر التالي.'
+        },
         footer: {
             terms: 'شروط الاستخدام',
             privacy: 'سياسة الخصوصية',
@@ -293,6 +304,17 @@ const LANG_DATA = {
             step3Title: 'Chat or Skip',
             step3Desc: 'Not interested? Press next to move on'
         },
+        faq: {
+            title: 'Frequently asked questions',
+            q1: 'Is GoLive free?',
+            a1: 'Yes, GoLive is completely free and needs no sign-up. Allow your camera and press start.',
+            q2: 'Do I need an account?',
+            a2: 'No account needed. Open the site and start chatting right away.',
+            q3: 'How do I choose country or gender?',
+            a3: 'Pick your country and gender filters on the home page before pressing start.',
+            q4: 'Is it safe?',
+            a4: 'Yes. There is a report and block system, and you can skip anyone with the Next button.'
+        },
         footer: {
             terms: 'Terms of Service',
             privacy: 'Privacy Policy',
@@ -388,6 +410,17 @@ const LANG_DATA = {
             step2Title: 'Birini Bul', step2Desc: 'Arama tuşuna basın ve birkaç saniye bekleyin',
             step3Title: 'Sohbet Et veya Geç', step3Desc: 'İlginç değilse ileri tuşuna basın'
         },
+        faq: {
+            title: 'Sık sorulan sorular',
+            q1: 'GoLive ücretsiz mi?',
+            a1: 'Evet, GoLive tamamen ücretsizdir ve kayıt gerekmez. Kameranıza izin verin ve başlatın.',
+            q2: 'Hesap açmam gerekiyor mu?',
+            a2: 'Hayır, hesap gerekmez. Siteyi açın ve hemen sohbete başlayın.',
+            q3: 'Ülke veya cinsiyeti nasıl seçerim?',
+            a3: 'Başlat düğmesine basmadan önce ana sayfada ülke ve cinsiyet filtrelerini seçin.',
+            q4: 'Güvenli mi?',
+            a4: 'Evet. Şikayet ve engelleme sistemi vardır, Sonraki düğmesiyle herkesi geçebilirsiniz.'
+        },
         footer: {
             terms: 'Kullanım Şartları', privacy: 'Gizlilik Politikası', contact: 'Bize Ulaşın', copy: '© 2026 GoLive. Tüm hakları saklıdır.'
         },
@@ -426,6 +459,17 @@ const LANG_DATA = {
             step1Title: 'Ouvrez la caméra', step1Desc: 'Autorisez le site à utiliser votre caméra et microphone',
             step2Title: 'Trouvez quelqu\'un', step2Desc: 'Appuyez sur recherche et attendez quelques secondes',
             step3Title: 'Discutez ou passez', step3Desc: 'Pas intéressé ? Appuyez sur suivant'
+        },
+        faq: {
+            title: 'Questions fréquentes',
+            q1: 'GoLive est-il gratuit ?',
+            a1: 'Oui, GoLive est entièrement gratuit et sans inscription. Autorisez la caméra et appuyez sur démarrer.',
+            q2: 'Faut-il un compte ?',
+            a2: 'Non, aucun compte requis. Ouvrez le site et discutez aussitôt.',
+            q3: 'Comment choisir le pays ou le genre ?',
+            a3: 'Choisissez les filtres de pays et de genre sur la page d’accueil avant de démarrer.',
+            q4: 'Est-ce sûr ?',
+            a4: 'Oui. Il y a un système de signalement et de blocage, et vous pouvez passer avec le bouton Suivant.'
         },
         footer: {
             terms: 'Conditions d\'utilisation', privacy: 'Politique de confidentialité', contact: 'Contactez-nous', copy: '© 2026 GoLive. Tous droits réservés.'
@@ -466,6 +510,17 @@ const LANG_DATA = {
             step2Title: 'Encuentra a alguien', step2Desc: 'Pulsa buscar y espera unos segundos',
             step3Title: 'Chatea o salta', step3Desc: '¿No te interesa? Pulsa siguiente'
         },
+        faq: {
+            title: 'Preguntas frecuentes',
+            q1: '¿GoLive es gratis?',
+            a1: 'Sí, GoLive es totalmente gratis y no requiere registro. Permite la cámara y pulsa empezar.',
+            q2: '¿Necesito una cuenta?',
+            a2: 'No, no necesitas cuenta. Abre el sitio y empieza a chatear al instante.',
+            q3: '¿Cómo elijo país o género?',
+            a3: 'Elige los filtros de país y género en la página principal antes de empezar.',
+            q4: '¿Es seguro?',
+            a4: 'Sí. Hay sistema de reportes y bloqueo, y puedes saltar con el botón Siguiente.'
+        },
         footer: {
             terms: 'Términos de uso', privacy: 'Política de privacidad', contact: 'Contáctanos', copy: '© 2026 GoLive. Todos los derechos reservados.'
         },
@@ -504,6 +559,17 @@ const LANG_DATA = {
             step1Title: 'Abra a câmera', step1Desc: 'Permita que o site use sua câmera e microfone',
             step2Title: 'Encontre alguém', step2Desc: 'Pressione pesquisar e aguarde alguns segundos',
             step3Title: 'Converse ou pule', step3Desc: 'Não interessa? Pressione próximo'
+        },
+        faq: {
+            title: 'Perguntas frequentes',
+            q1: 'O GoLive é grátis?',
+            a1: 'Sim, o GoLive é totalmente grátis e sem registo. Permita a câmara e prima começar.',
+            q2: 'Preciso de conta?',
+            a2: 'Não, não precisa de conta. Abra o site e comece a conversar na hora.',
+            q3: 'Como escolho país ou género?',
+            a3: 'Escolha os filtros de país e género na página inicial antes de começar.',
+            q4: 'É seguro?',
+            a4: 'Sim. Há sistema de denúncia e bloqueio, e pode saltar com o botão Seguinte.'
         },
         footer: {
             terms: 'Termos de uso', privacy: 'Política de privacidade', contact: 'Fale conosco', copy: '© 2026 GoLive. Todos os direitos reservados.'
@@ -544,6 +610,17 @@ const LANG_DATA = {
             step2Title: 'किसी को खोजें', step2Desc: 'खोज दबाएं और कुछ सेकंड प्रतीक्षा करें',
             step3Title: 'बात करें या छोड़ें', step3Desc: 'दिलचस्प नहीं? अगला दबाएं'
         },
+        faq: {
+            title: 'अक्सर पूछे जाने वाले प्रश्न',
+            q1: 'क्या GoLive मुफ़्त है?',
+            a1: 'हाँ, GoLive पूरी तरह मुफ़्त है और इसमें साइन-अप की ज़रूरत नहीं। कैमरा चालू करें और स्टार्ट दबाएँ।',
+            q2: 'क्या मुझे खाता चाहिए?',
+            a2: 'नहीं, किसी खाते की ज़रूरत नहीं। साइट खोलें और तुरंत चैट शुरू करें।',
+            q3: 'देश या लिंग कैसे चुनूँ?',
+            a3: 'स्टार्ट दबाने से पहले होम पेज पर देश और लिंग फ़िल्टर चुनें।',
+            q4: 'क्या यह सुरक्षित है?',
+            a4: 'हाँ। रिपोर्ट और ब्लॉक सिस्टम है, और Next बटन से किसी को भी छोड़ सकते हैं।'
+        },
         footer: {
             terms: 'सेवा की शर्तें', privacy: 'गोपनीयता नीति', contact: 'संपर्क करें', copy: '© 2026 GoLive. सर्वाधिकार सुरक्षित।'
         },
@@ -583,6 +660,17 @@ const LANG_DATA = {
             step2Title: 'کسی کو تلاش کریں', step2Desc: 'تلاش دبائیں اور چند سیکنڈ انتظار کریں',
             step3Title: 'بات کریں یا آگے بڑھیں', step3Desc: 'دلچسپ نہیں؟ اگلے پر کلک کریں'
         },
+        faq: {
+            title: 'اکثر پوچھے جانے والے سوالات',
+            q1: 'کیا GoLive مفت ہے؟',
+            a1: 'جی ہاں، GoLive بالکل مفت ہے اور سائن اپ کی ضرورت نہیں۔ کیمرہ آن کریں اور اسٹارٹ دبائیں۔',
+            q2: 'کیا مجھے اکاؤنٹ چاہیے؟',
+            a2: 'نہیں، کسی اکاؤنٹ کی ضرورت نہیں۔ سائٹ کھولیں اور فوراً چیٹ شروع کریں۔',
+            q3: 'ملک یا جنس کیسے منتخب کروں؟',
+            a3: 'اسٹارٹ دبانے سے پہلے ہوم پیج پر ملک اور جنس کے فلٹر منتخب کریں۔',
+            q4: 'کیا یہ محفوظ ہے؟',
+            a4: 'جی ہاں۔ رپورٹ اور بلاک سسٹم موجود ہے، اور Next بٹن سے کسی کو بھی چھوڑ سکتے ہیں۔'
+        },
         footer: {
             terms: 'استعمال کی شرائط', privacy: 'رازداری کی پالیسی', contact: 'ہم سے رابطہ کریں', copy: '© 2026 GoLive. تمام حقوق محفوظ ہیں۔'
         },
@@ -621,6 +709,17 @@ const LANG_DATA = {
             step1Title: 'פתח את המצלמה', step1Desc: 'אפשר לאתר להשתמש במצלמה ובמיקרופון שלך',
             step2Title: 'מצא מישהו', step2Desc: 'לחץ על חיפוש וחכה כמה שניות',
             step3Title: 'שוחח או דלג', step3Desc: 'לא מתאים? לחץ על הבא'
+        },
+        faq: {
+            title: 'שאלות נפוצות',
+            q1: 'האם GoLive בחינם?',
+            a1: 'כן, GoLive בחינם לחלוטין וללא הרשמה. אפשרו את המצלמה ולחצו התחל.',
+            q2: 'האם צריך חשבון?',
+            a2: 'לא, אין צורך בחשבון. פתחו את האתר והתחילו לשוחח מיד.',
+            q3: 'איך בוחרים מדינה או מגדר?',
+            a3: 'בחרו את מסנני המדינה והמגדר בדף הבית לפני שלוחצים התחל.',
+            q4: 'האם זה בטוח?',
+            a4: 'כן. יש מערכת דיווח וחסימה, ואפשר לדלג עם כפתור הבא.'
         },
         footer: {
             terms: 'תנאי שימוש', privacy: 'מדיניות פרטיות', contact: 'צור קשר', copy: '© 2026 GoLive. כל הזכויות שמורות.'
@@ -699,6 +798,17 @@ const LANG_DATA = {
             step2Title: 'Найдите человека', step2Desc: 'Нажмите поиск и подождите несколько секунд',
             step3Title: 'Общайтесь или листайте', step3Desc: 'Не интересно? Нажмите «Далее»'
         },
+        faq: {
+            title: 'Частые вопросы',
+            q1: 'GoLive бесплатный?',
+            a1: 'Да, GoLive полностью бесплатный и без регистрации. Разрешите камеру и нажмите старт.',
+            q2: 'Нужен ли аккаунт?',
+            a2: 'Нет, аккаунт не нужен. Откройте сайт и сразу начинайте общение.',
+            q3: 'Как выбрать страну или пол?',
+            a3: 'Выберите фильтры страны и пола на главной странице перед стартом.',
+            q4: 'Это безопасно?',
+            a4: 'Да. Есть система жалоб и блокировки, любого можно пропустить кнопкой «Далее».'
+        },
         footer: {
             terms: 'Условия использования', privacy: 'Политика конфиденциальности', contact: 'Связаться с нами', copy: '© 2026 GoLive. Все права защищены.'
         },
@@ -775,6 +885,17 @@ const LANG_DATA = {
             step1Title: 'Kamera öffnen', step1Desc: 'Erlaube der Seite, deine Kamera und dein Mikrofon zu verwenden',
             step2Title: 'Jemanden finden', step2Desc: 'Drücke auf Suchen und warte ein paar Sekunden',
             step3Title: 'Chatten oder weiter', step3Desc: 'Nicht interessant? Klicke auf Weiter'
+        },
+        faq: {
+            title: 'Häufige Fragen',
+            q1: 'Ist GoLive kostenlos?',
+            a1: 'Ja, GoLive ist komplett kostenlos und ohne Anmeldung. Kamera erlauben und starten.',
+            q2: 'Brauche ich ein Konto?',
+            a2: 'Nein, kein Konto nötig. Seite öffnen und sofort chatten.',
+            q3: 'Wie wähle ich Land oder Geschlecht?',
+            a3: 'Wähle Länder- und Geschlechtsfilter auf der Startseite vor dem Start.',
+            q4: 'Ist es sicher?',
+            a4: 'Ja. Es gibt ein Melde- und Blockiersystem, mit Weiter kannst du jeden überspringen.'
         },
         footer: {
             terms: 'Nutzungsbedingungen', privacy: 'Datenschutzerklärung', contact: 'Kontakt', copy: '© 2026 GoLive. Alle Rechte vorbehalten.'

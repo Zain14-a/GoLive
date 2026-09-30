@@ -1,6 +1,9 @@
 node_modules/
 .env
 *.log
+__pycache__/
+*.pyc
+shots/
 cloudflared.exe
 ngrok.zip
 *.zip

@@ -1,4 +1,4 @@
-﻿const socketOpts = { reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] };
+const socketOpts = { reconnection: true, reconnectionDelay: 1000, reconnectionAttempts: 50, transports: ['websocket', 'polling'] };
 const socket = BACKEND_URL ? io(BACKEND_URL, socketOpts) : io(socketOpts);
 
 document.documentElement.dir = LANG_DATA[Lang.getCurrent()]?.dir || 'rtl';
@@ -77,24 +77,26 @@ function ct(key) {
     return key;
 }
 
-const COUNTRY_FLAGS = {
-    JO: '\u{1F1EF}\u{1F1F4}', SA: '\u{1F1F8}\u{1F1E6}', AE: '\u{1F1E6}\u{1F1EA}',
-    EG: '\u{1F1EA}\u{1F1EC}', IQ: '\u{1F1EE}\u{1F1F1}', KW: '\u{1F1F0}\u{1F1FC}',
-    QA: '\u{1F1F6}\u{1F1E6}', BH: '\u{1F1E7}\u{1F1ED}', OM: '\u{1F1F4}\u{1F1F2}',
-    LB: '\u{1F1F1}\u{1F1E7}', SY: '\u{1F1F8}\u{1F1FE}', PS: '\u{1F1F5}\u{1F1F8}',
-    MA: '\u{1F1F2}\u{1F1E6}', DZ: '\u{1F1E9}\u{1F1FF}', TN: '\u{1F1F9}\u{1F1F3}',
-    LY: '\u{1F1F1}\u{1F1FE}', SD: '\u{1F1F8}\u{1F1E9}', YE: '\u{1F1FE}\u{1F1EA}',
-    MR: '\u{1F1F2}\u{1F1F7}', SO: '\u{1F1F8}\u{1F1F4}', DJ: '\u{1F1E9}\u{1F1EF}',
-    KM: '\u{1F1F0}\u{1F1F2}', TD: '\u{1F1F9}\u{1F1E9}',
-    US: '\u{1F1FA}\u{1F1F8}', GB: '\u{1F1EC}\u{1F1E7}', FR: '\u{1F1EB}\u{1F1F7}',
-    DE: '\u{1F1E9}\u{1F1EA}', IT: '\u{1F1EE}\u{1F1F9}', ES: '\u{1F1EA}\u{1F1F8}',
-    JP: '\u{1F1EF}\u{1F1F5}', KR: '\u{1F1F0}\u{1F1F7}', CN: '\u{1F1E8}\u{1F1F3}',
-    IN: '\u{1F1EE}\u{1F1F3}', TR: '\u{1F1F9}\u{1F1F7}', BR: '\u{1F1E7}\u{1F1F7}',
-    CA: '\u{1F1E8}\u{1F1E6}', AU: '\u{1F1E6}\u{1F1FA}', RU: '\u{1F1F7}\u{1F1FA}',
-    PK: '\u{1F1F5}\u{1F1F0}', BD: '\u{1F1E7}\u{1F1E9}', TH: '\u{1F1F9}\u{1F1ED}',
-    VN: '\u{1F1FB}\u{1F1F3}', PH: '\u{1F1F5}\u{1F1ED}', ID: '\u{1F1EE}\u{1F1E9}',
-    MY: '\u{1F1F2}\u{1F1FE}', SG: '\u{1F1F8}\u{1F1EC}'
-};
+const COUNTRY_CODES = new Set([
+    'JO', 'SA', 'AE', 'EG', 'IQ', 'KW', 'QA', 'BH', 'OM', 'LB', 'SY', 'PS', 'TR', 'IL', 'IR', 'CY',
+    'MA', 'DZ', 'TN', 'LY', 'SD', 'YE', 'MR', 'SO', 'DJ', 'KM', 'TD', 'NG', 'KE', 'ET', 'GH', 'ZA',
+    'TZ', 'UG', 'RW', 'CM', 'SN', 'CI', 'ML', 'BF', 'NE', 'GN', 'BJ', 'TG', 'CF', 'CG', 'CD', 'GA',
+    'GQ', 'AO', 'ZM', 'ZW', 'BW', 'NA', 'MZ', 'MG', 'MW', 'SC', 'MU', 'SS', 'LR', 'SL', 'GM', 'CV',
+    'BI', 'US', 'GB', 'FR', 'DE', 'IT', 'ES', 'PT', 'NL', 'BE', 'CH', 'AT', 'SE', 'NO', 'DK', 'FI',
+    'IE', 'PL', 'CZ', 'SK', 'HU', 'RO', 'BG', 'GR', 'HR', 'RS', 'BA', 'ME', 'MK', 'AL', 'SI', 'LT',
+    'LV', 'EE', 'UA', 'BY', 'MD', 'IS', 'LU', 'MT', 'AD', 'MC', 'VA', 'XK', 'JP', 'KR', 'CN', 'IN',
+    'PK', 'BD', 'TH', 'VN', 'PH', 'ID', 'MY', 'SG', 'MM', 'KH', 'LA', 'NP', 'LK', 'AF', 'MN', 'KZ',
+    'UZ', 'TM', 'KG', 'TJ', 'GE', 'AM', 'AZ', 'TW', 'BN', 'BT', 'MV', 'TL', 'MX', 'CA', 'RU', 'BR',
+    'AR', 'CL', 'CO', 'PE', 'VE', 'EC', 'BO', 'PY', 'UY', 'AU', 'NZ', 'PG', 'FJ', 'WS', 'TO', 'VU',
+    'SB', 'KI', 'MH', 'FM', 'PW', 'NR', 'TV'
+]);
+
+function codeChip(code) {
+    const el = document.createElement('span');
+    el.className = 'code-chip';
+    el.textContent = code;
+    return el;
+}
 
 function getCountryName(code) {
     const cur = LANG_DATA[Lang.getCurrent()];
@@ -176,7 +178,8 @@ function showStats() {
     s.countries.forEach(c => {
         const tag = document.createElement('span');
         tag.className = 'country-tag';
-        tag.textContent = (COUNTRY_FLAGS[c] || '') + ' ' + getCountryName(c);
+        tag.appendChild(codeChip(c));
+        tag.appendChild(document.createTextNode(' ' + getCountryName(c)));
         tagsEl.appendChild(tag);
     });
     statsModal.classList.add('show');
@@ -195,6 +198,24 @@ function clearFilterOverlay() {
     if (filterOverlay) filterOverlay.innerHTML = '';
 }
 
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const FX_PARTICLES = {
+    heart: { count: 9, cls: 'fx-heart', colors: ['#c2564b', '#d18a72'] },
+    star:  { count: 11, cls: 'fx-star',  colors: ['#d8bd93', '#e6d5ae'] },
+    fire:  { count: 7,  cls: 'fx-ember', colors: ['#e0a860'] },
+    snow:  { count: 16, cls: 'fx-flake', colors: ['#e8e6de'] },
+    party: { count: 12, cls: 'fx-confetti', colors: ['#c0a175', '#c2564b', '#7f9c86', '#8e93b8'] }
+};
+
+function spawnFx(cls, style) {
+    const el = document.createElement('div');
+    el.className = 'fx ' + cls;
+    el.style.cssText = style;
+    filterOverlay.appendChild(el);
+    return el;
+}
+
 function drawFilter() {
     if (!filterOverlay || !localStream || currentFilter === 'none') {
         clearFilterOverlay();
@@ -205,94 +226,34 @@ function drawFilter() {
     clearFilterOverlay();
     const t = Date.now() / 1000;
 
-    switch (currentFilter) {
-        case 'cool': {
-            const el = document.createElement('div');
-            el.className = 'filter-emoji';
-            el.textContent = '😎';
-            el.style.cssText = 'position:absolute;top:15%;left:50%;transform:translateX(-50%);font-size:3rem;pointer-events:none;';
-            filterOverlay.appendChild(el);
-            break;
-        }
-        case 'crown': {
-            const el = document.createElement('div');
-            el.className = 'filter-emoji';
-            el.textContent = '👑';
-            el.style.cssText = 'position:absolute;top:2%;left:50%;transform:translateX(-50%);font-size:3.5rem;pointer-events:none;';
-            filterOverlay.appendChild(el);
-            break;
-        }
-        case 'heart': {
-            for (let i = 0; i < 8; i++) {
-                const el = document.createElement('div');
-                el.textContent = '❤️';
-                const x = 10 + 80 * ((i * 0.37 + t * 0.3) % 1);
-                const y = 10 + 80 * ((i * 0.53 + t * 0.2) % 1);
-                const opacity = 0.5 + 0.5 * Math.sin(t * 2 + i);
-                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.8rem;opacity:${opacity};pointer-events:none;`;
-                filterOverlay.appendChild(el);
+    if (currentFilter === 'cool') {
+        const el = spawnFx('fx-cool', '');
+        const bridge = document.createElement('i');
+        el.appendChild(bridge);
+    } else if (currentFilter === 'crown') {
+        spawnFx('fx-crown', '');
+    } else if (currentFilter === 'rainbow') {
+        ['#b4483f', '#c07a3a', '#b3a24a', '#6f8f6a', '#5a6f9c', '#7a5f8e'].forEach((c, i) => {
+            spawnFx('fx-rainbow', `left:0;top:${12 + i * 7}%;background:${c};`);
+        });
+    } else {
+        const cfg = FX_PARTICLES[currentFilter];
+        if (cfg) {
+            for (let i = 0; i < cfg.count; i++) {
+                const x = 6 + 88 * ((i * 0.373 + t * 0.16) % 1);
+                const y = 8 + 84 * ((i * 0.529 + t * 0.24) % 1);
+                const depth = 0.55 + 0.45 * Math.sin(t * 1.6 + i);
+                const scale = REDUCED_MOTION ? 1 : 0.6 + 0.55 * ((i % 3) / 2);
+                const color = cfg.colors[i % cfg.colors.length];
+                const style = REDUCED_MOTION
+                    ? `left:${x}%;top:${y}%;background:${color};opacity:${depth.toFixed(2)};`
+                    : `left:${x}%;top:${y}%;background:${color};opacity:${depth.toFixed(2)};transform:scale(${scale.toFixed(2)});`;
+                spawnFx(cfg.cls, style);
             }
-            break;
-        }
-        case 'star': {
-            for (let i = 0; i < 10; i++) {
-                const el = document.createElement('div');
-                el.textContent = '⭐';
-                const x = 5 + 90 * ((i * 0.31 + t * 0.15) % 1);
-                const y = 5 + 90 * ((i * 0.47 + t * 0.25) % 1);
-                const opacity = 0.4 + 0.6 * Math.sin(t * 3 + i);
-                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.2rem;opacity:${opacity};pointer-events:none;`;
-                filterOverlay.appendChild(el);
-            }
-            break;
-        }
-        case 'fire': {
-            for (let i = 0; i < 6; i++) {
-                const el = document.createElement('div');
-                el.textContent = '🔥';
-                const x = 10 + 80 * ((i * 0.41 + Math.sin(t + i) * 0.05) % 1);
-                const y = 70 + 25 * Math.sin(t * 2 + i * 2);
-                const opacity = 0.6 + 0.4 * Math.sin(t * 4 + i);
-                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:2rem;opacity:${opacity};pointer-events:none;`;
-                filterOverlay.appendChild(el);
-            }
-            break;
-        }
-        case 'rainbow': {
-            const colors = ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#8800ff'];
-            const barH = 5;
-            colors.forEach((c, i) => {
-                const el = document.createElement('div');
-                el.style.cssText = `position:absolute;left:0;top:${15 + i * barH}%;width:100%;height:${barH}%;background:${c};opacity:0.3;pointer-events:none;`;
-                filterOverlay.appendChild(el);
-            });
-            break;
-        }
-        case 'snow': {
-            for (let i = 0; i < 15; i++) {
-                const el = document.createElement('div');
-                el.textContent = '❄️';
-                const x = (i * 23 + t * 10) % 100;
-                const y = (i * 17 + t * 30) % 100;
-                const opacity = 0.5 + 0.5 * Math.sin(t + i);
-                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.2rem;opacity:${opacity};pointer-events:none;`;
-                filterOverlay.appendChild(el);
-            }
-            break;
-        }
-        case 'party': {
-            const emojis = ['🎉', '🎊', '🎈', '🪅'];
-            for (let i = 0; i < 8; i++) {
-                const el = document.createElement('div');
-                el.textContent = emojis[i % emojis.length];
-                const x = (i * 29 + Math.sin(t + i) * 10) % 100;
-                const y = (i * 19 + t * 20) % 100;
-                el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:1.5rem;opacity:0.6;pointer-events:none;`;
-                filterOverlay.appendChild(el);
-            }
-            break;
         }
     }
+
+    if (REDUCED_MOTION) return;
 
     filterAnimFrame = requestAnimationFrame(drawFilter);
 }
@@ -308,7 +269,9 @@ function setFilter(name) {
         cancelAnimationFrame(filterAnimFrame);
         drawFilter();
     }
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    // The AI chip draws to its own #faceCanvas layer and can coexist with a
+    // static filter, so exclude it from the normal active-state clearing.
+    document.querySelectorAll('.filter-chip:not(#aiFilterToggle)').forEach(c => c.classList.remove('active'));
     const activeChip = document.querySelector(`.filter-chip[data-filter="${name}"]`);
     if (activeChip) activeChip.classList.add('active');
 }
@@ -516,10 +479,9 @@ socket.on('matchFound', async (data) => {
     chatStartTime = Date.now();
     partnerCountry = data.partnerCountry || null;
     const partnerReal = data.partnerRealCountry || partnerCountry;
-    if (partnerReal && COUNTRY_FLAGS[partnerReal]) {
-        remoteFlag.textContent = COUNTRY_FLAGS[partnerReal];
-    } else {
-        remoteFlag.textContent = '🌍';
+    remoteFlag.textContent = '';
+    if (partnerReal && COUNTRY_CODES.has(partnerReal)) {
+        remoteFlag.appendChild(codeChip(partnerReal));
     }
     addMsg(ct('messages.connected'), 'sys');
     setStatus(ct('status.connected'), 'green');
@@ -720,10 +682,13 @@ socket.on('connect_error', (err) => {
 
     try {
         const g = await detectCountry();
-        if (g && g.country && COUNTRY_FLAGS[g.country]) {
+        if (g && g.country && COUNTRY_CODES.has(g.country)) {
             myRealCountry = g.country;
             const lf = document.getElementById('localFlag');
-            if (lf) lf.textContent = COUNTRY_FLAGS[g.country];
+            if (lf) {
+                lf.textContent = '';
+                lf.appendChild(codeChip(g.country));
+            }
         }
     } catch (e) {}
 
@@ -751,20 +716,37 @@ socket.on('connect_error', (err) => {
 
 let aiFilterActive = false;
 let faceDetectionInterval = null;
+let aiDetectionBusy = false;
 const faceCanvas = document.createElement('canvas');
 faceCanvas.className = 'face-overlay';
 faceCanvas.id = 'faceCanvas';
 
 const aiBtn = document.createElement('button');
 aiBtn.id = 'aiFilterToggle';
-aiBtn.textContent = '🎯 AI';
+aiBtn.className = 'filter-chip';
+aiBtn.dir = 'ltr';
 aiBtn.title = 'AI Face Filters';
 document.getElementById('filtersBar')?.appendChild(aiBtn);
 
+function setAiBtnLabel(text) {
+    aiBtn.textContent = '';
+    if (text === 'AI') {
+        aiBtn.appendChild(Object.assign(document.createElement('span'), { className: 'code-chip', textContent: 'AI' }));
+        aiBtn.appendChild(document.createTextNode(' Filters'));
+    } else {
+        aiBtn.appendChild(document.createTextNode(text));
+    }
+}
+setAiBtnLabel('AI');
+
+// face-api.js does not publish its model weights inside the npm package, so the
+// weights are served from the matching GitHub mirror instead.
+const FACE_API_WEIGHTS = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+
 async function initFaceApi() {
     try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
-        await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights');
+        await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_API_WEIGHTS);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(FACE_API_WEIGHTS);
         return true;
     } catch { return false; }
 }
@@ -778,9 +760,14 @@ function startAIFilter() {
     faceCanvas.height = localVideo.videoHeight || 240;
 
     faceDetectionInterval = setInterval(async () => {
+        // Detection is async and slower than this interval on CPU-only devices.
+        // Without a re-entrancy guard the overlapping runs pile up and starve
+        // the main thread, freezing the whole page.
+        if (aiDetectionBusy) return;
         if (!localVideo || !localVideo.videoWidth) return;
-        faceCanvas.width = localVideo.videoWidth;
-        faceCanvas.height = localVideo.videoHeight;
+        aiDetectionBusy = true;
+        if (faceCanvas.width !== localVideo.videoWidth) faceCanvas.width = localVideo.videoWidth;
+        if (faceCanvas.height !== localVideo.videoHeight) faceCanvas.height = localVideo.videoHeight;
         ctx.clearRect(0, 0, faceCanvas.width, faceCanvas.height);
         try {
             const detections = await faceapi.detectAllFaces(localVideo, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.3 })).withFaceLandmarks();
@@ -818,11 +805,13 @@ function startAIFilter() {
                 ctx.restore();
             }
         } catch {}
+        finally { aiDetectionBusy = false; }
     }, 200);
 }
 
 function stopAIFilter() {
     clearInterval(faceDetectionInterval);
+    aiDetectionBusy = false;
     const c = document.getElementById('faceCanvas');
     if (c) c.remove();
     aiFilterActive = false;
@@ -831,18 +820,18 @@ function stopAIFilter() {
 
 aiBtn.addEventListener('click', async () => {
     if (aiFilterActive) { stopAIFilter(); return; }
-    aiBtn.textContent = '⏳ LOADING...';
+    setAiBtnLabel('Loading');
     aiBtn.disabled = true;
     const ok = await initFaceApi();
     aiBtn.disabled = false;
     if (ok) {
         aiFilterActive = true;
-        aiBtn.textContent = '🎯 AI';
+        setAiBtnLabel('AI');
         aiBtn.classList.add('active');
         startAIFilter();
-        document.querySelectorAll('#filtersBar .filter-chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('#filtersBar .filter-chip:not(#aiFilterToggle)').forEach(c => c.classList.remove('active'));
     } else {
-        aiBtn.textContent = '🎯 AI';
+        setAiBtnLabel('AI');
         addMsg('AI face filters not available', 'sys');
     }
 });
@@ -923,9 +912,9 @@ async function sendBotMessage(userText) {
             })
         });
         const data = await resp.json();
-        reply = data.text || 'هههه والله كلامك حلو 😊';
+        reply = data.text || 'هههه والله كلامك حلو';
     } catch {
-        reply = 'هههه والله كلامك حلو 😊';
+        reply = 'هههه والله كلامك حلو';
     }
 
     botConversation.push({ role: 'model', text: reply });

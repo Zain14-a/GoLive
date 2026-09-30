@@ -308,10 +308,10 @@ class AvatarRenderer {
         ctx.quadraticCurveTo(nx, ny, nx + nr, ny);
         ctx.closePath();
         ctx.fill();
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px sans-serif';
+        ctx.fillStyle = '#efece6';
+        ctx.font = '12px system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('🤖 ' + (this.gender === 'male' ? 'Adam' : 'Eve'), w / 2, h - 20);
+        ctx.fillText(this.gender === 'male' ? 'Adam' : 'Eve', w / 2, h - 20);
     }
 }

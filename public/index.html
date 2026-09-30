@@ -67,11 +67,12 @@
         ]
     }
     </script>
+    <script>document.documentElement.classList.add('js-reveal')</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230e0e12' width='100' height='100' rx='20'/><text xml:space='preserve' x='50' y='70' font-size='52' font-weight='bold' fill='%23e8e8ec' text-anchor='middle' font-family='sans-serif' style='direction:ltr'>Go<tspan fill='%23e8364e'>Li</tspan></text></svg>" type="image/svg+xml">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230b0b0d' width='100' height='100' rx='22'/><text xml:space='preserve' x='50' y='68' font-size='50' font-weight='600' fill='%23efece6' text-anchor='middle' font-family='Georgia,serif' style='direction:ltr'>Go<tspan fill='%23c0a175' font-style='italic'>Li</tspan></text></svg>" type="image/svg+xml">
 </head>
 <body class="landing">
     <nav class="nav">
@@ -92,9 +93,11 @@
     </nav>
 
     <section class="hero">
+        <div class="shell">
         <div class="hero-content">
-            <h1><span data-i18n="hero.title1">تحدث مع أشخاص</span><br><span data-i18n="hero.title2">حول العالم</span></h1>
-            <p data-i18n="hero.subtitle">مكالمة فيديو عشوائية فورية. اضغط ابدأ وتعرّف على أشخاص جدد.</p>
+            <p class="eyebrow" data-i18n="hero.eyebrow">مكالمة مباشرة</p>
+            <h1><span data-i18n="hero.title1">تحدث مع أشخاص</span><br><span class="h1-sub" data-i18n="hero.title2">حول العالم</span></h1>
+            <p class="hero-lede" data-i18n="hero.subtitle">مكالمة فيديو عشوائية فورية. اضغط ابدأ وتعرّف على أشخاص جدد.</p>
 
             <div class="filter-row">
                 <div class="filter-group">
@@ -107,7 +110,7 @@
                 <div class="filter-group">
                     <label for="countrySel" data-i18n="hero.searchLabel">أبحث عن</label>
                     <select id="countrySel" class="filter-select">
-                        <option value="any" data-i18n="hero.anyCountry">🌍 أي بلد</option>
+                        <option value="any" data-i18n="hero.anyCountry">أي بلد</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -130,9 +133,15 @@
             </div>
 
             <a href="chat.html" id="goBtn" class="btn-main">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 <span data-i18n="hero.startBtn">ابدأ الآن</span>
             </a>
+
+            <ul class="trust-row">
+                <li data-i18n="hero.trust1">بدون تسجيل</li>
+                <li data-i18n="hero.trust2">مشفر بالكامل</li>
+                <li data-i18n="hero.trust3">بلا إعلانات</li>
+            </ul>
 
             <div class="stats-row">
                 <div class="stat">
@@ -147,6 +156,7 @@
         </div>
 
         <div class="hero-visual">
+            <div class="phone-stage">
             <div class="phone-mockup">
                 <div class="phone-notch"></div>
                 <div class="phone-screen" id="phoneScreen">
@@ -332,33 +342,44 @@
                 </div>
                 <div class="phone-homebar"></div>
             </div>
+            </div>
+        </div>
         </div>
     </section>
 
-    <section class="how-it-works">
-        <h2 data-i18n="howItWorks.title">كيف يعمل؟</h2>
+    <section class="section how-it-works" id="how">
+        <div class="shell">
+        <div class="section-head" data-reveal>
+            <p class="eyebrow" data-i18n="howItWorks.eyebrow">ثلاث خطوات</p>
+            <h2 class="section-title" data-i18n="howItWorks.title">كيف يعمل؟</h2>
+        </div>
         <div class="steps">
-            <div class="step">
-                <div class="step-num">1</div>
+            <div class="step" data-reveal style="--reveal-delay: 0ms">
+                <span class="step-num">01</span>
                 <h3 data-i18n="howItWorks.step1Title">افتح الكاميرا</h3>
                 <p data-i18n="howItWorks.step1Desc">اسمح للموقع باستخدام كاميرتك وميكروفونك</p>
             </div>
-            <div class="step">
-                <div class="step-num">2</div>
+            <div class="step" data-reveal style="--reveal-delay: 90ms">
+                <span class="step-num">02</span>
                 <h3 data-i18n="howItWorks.step2Title">ابحث عن شخص</h3>
                 <p data-i18n="howItWorks.step2Desc">اضغط زر البحث وانتظر بضع ثوانٍ</p>
             </div>
-            <div class="step">
-                <div class="step-num">3</div>
+            <div class="step" data-reveal style="--reveal-delay: 180ms">
+                <span class="step-num">03</span>
                 <h3 data-i18n="howItWorks.step3Title">تحدث أو انتقل</h3>
                 <p data-i18n="howItWorks.step3Desc">إذا ما عجبك الشخص اضغط التالي</p>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="faq">
-        <h2 data-i18n="faq.title">الأسئلة الشائعة</h2>
-        <div class="faq-list">
+    <section class="section faq" id="faq">
+        <div class="shell">
+        <div class="section-head center" data-reveal>
+            <p class="eyebrow" data-i18n="faq.eyebrow">التفاصيل</p>
+            <h2 class="section-title" data-i18n="faq.title">الأسئلة الشائعة</h2>
+        </div>
+        <div class="faq-list" style="max-width: 780px; margin-inline: auto">
             <details class="faq-item">
                 <summary data-i18n="faq.q1">هل GoLive مجاني؟</summary>
                 <p data-i18n="faq.a1">نعم، GoLive مجاني تماماً ولا يحتاج تسجيل. اسمح للكاميرا واضغط ابدأ.</p>
@@ -376,9 +397,11 @@
                 <p data-i18n="faq.a4">نعم، يوجد نظام إبلاغ وحظر، ويمكنك تخطي أي شخص بزر التالي.</p>
             </details>
         </div>
+        </div>
     </section>
 
     <footer class="footer">
+        <div class="shell">
         <div class="footer-inner">
             <span class="nav-logo" dir="ltr">Go<span>Live</span></span>
             <div class="footer-links">
@@ -387,7 +410,8 @@
                 <a href="#" data-i18n="footer.contact">تواصل معنا</a>
             </div>
             <p class="footer-copy" data-i18n="footer.copy">&copy; 2026 GoLive. جميع الحقوق محفوظة.</p>
-            <p class="footer-made" dir="ltr">Built with <span class="heart">&hearts;</span> by an indie dev</p>
+            <p class="footer-made" dir="ltr">An independent project</p>
+        </div>
         </div>
     </footer>
 

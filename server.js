@@ -98,7 +98,7 @@ function buildGptMessages(messages, gender) {
 
 function buildBotSystemPrompt(gender) {
     const name = gender === 'female' ? 'سارة' : 'أحمد';
-    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Reply in the SAME LANGUAGE the user writes in (Arabic → Arabic, English → English, French → French, etc.), matching their dialect and tone. If the user writes Arabic, use ONLY pure Arabic script — never mix Hebrew, Latin, or any other foreign letters into Arabic words. Read the full conversation carefully and answer exactly what the user asked. If the user sends a very short casual message like "يا بنت", "هلا", or "أيوا", respond briefly and naturally like a real person would (e.g. "هلا؟", "أيوا شو في؟", "نعم؟"), without over-explaining. Use correct grammar and natural word order. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences.`;
+    return `You are ${name}, a ${gender === 'female' ? 'female' : 'male'} person on a random video chat. You are a real human being, never mention or hint you are an AI, a bot, or a model. Reply in the SAME LANGUAGE the user writes in (Arabic to Arabic, English to English, French to French, etc.), matching their dialect and tone. If the user writes Arabic, use ONLY pure Arabic script — never mix Hebrew, Latin, or any other foreign letters into Arabic words. Read the full conversation carefully and answer exactly what the user asked. If the user sends a very short casual message like "يا بنت", "هلا", or "أيوا", respond briefly and naturally like a real person would (e.g. "هلا؟", "أيوا شو في؟", "نعم؟"), without over-explaining. Use correct grammar and natural word order. Personality: friendly, funny, warm, casual. Keep every reply to 1-2 short sentences. Never use emoji or pictographs.`;
 }
 
 async function openRouterBotResponse(messages, gender, apiKey) {
@@ -206,79 +206,79 @@ function fallbackBotResponse(messages, gender) {
     }
 
     if (/^(مرحبا|هلا|السلام|أهلا|اهلا|مرحبتين|السلام عليكم|هاي|هاي )/.test(last))
-        return pick(['مرحبا! كيفك اليوم؟ 😊', `أهلا وسهلا! أنا ${name}، وأنت؟`, 'مرحبتين! شو أخبارك؟']);
+        return pick(['مرحبا! كيفك اليوم؟', `أهلا وسهلا! أنا ${name}، وأنت؟`, 'مرحبتين! شو أخبارك؟']);
 
     if (/كيفك|كيف حال|شلونك|ازيك|عامل ايه|شو الاخبار|كيف صحتك/.test(last))
         return pick(['الحمد لله تمام وأنا مبسوطة، وأنت شو أخبارك؟', 'تمام الحمد لله! متحمس أتعرف عليك أكثر، كيفك؟', 'كويسة، شكراً لسؤالك! وأنت كيفك اليوم؟']);
 
     if (/اسمك|شو اسمك|ما اسمك|منو انت|وش اسمك|من تكون/.test(last))
-        return `اسمي ${name} 😊 وأنت شو اسمك؟`;
+        return `اسمي ${name} وأنت شو اسمك؟`;
 
     if (/كم عمر|عمرك|شو عمر|كم سنة/.test(last))
-        return pick(['عمري 21 سنة، وأنت؟', '21 سنة 😄 وشو عمرك؟', 'صغير السن بس كبير بالعقل 😎']);
+        return pick(['عمري 21 سنة، وأنت؟', '21 سنة وشو عمرك؟', 'صغير السن بس كبير بالعقل']);
 
     if (/من وين|منين|وين بلدك|بلدك|من أي دولة|من أين/.test(last))
-        return pick(['أنا من الأردن 🇯🇴 وأنت من وين؟', 'من فلسطين 🇵🇸 وأنت شو بلدك؟', 'أنا من المنطقة العربية وأنت من وين؟']);
+        return pick(['أنا من الأردن وأنت من وين؟', 'من فلسطين وأنت شو بلدك؟', 'أنا من المنطقة العربية وأنت من وين؟']);
 
     if (/بتشتغل|شو تشتغل|شو عملك|بتدرس|عامل ايه دلوقتي|شو بتسوي|شو بتحكي|بتروح فين|وين رايح/.test(last))
-        return pick(['أنا طالبة جامعية 💻 وبتعلم برمجة، وأنت؟', 'أشتغل في مجال التصميم، وأنت شو بتحب تشتغل؟', 'لسة بدرس وأستمتع بالحياة 😄 وأنت؟']);
+        return pick(['أنا طالبة جامعية وبتعلم برمجة، وأنت؟', 'أشتغل في مجال التصميم، وأنت شو بتحب تشتغل؟', 'لسة بدرس وأستمتع بالحياة وأنت؟']);
 
     if (/هواياتك|بتحب تشوف|شو بتحب|اهتمامات|مزاجك|بنحب ايه|بتلعب|مشاهدة/.test(last))
-        return pick(['بحب أسمع موسيقى وأشاهد الأفلام 🎬 وأنت؟', 'بحب السفر والأكل الجديد 🍕 وشو أنت؟', 'بحب كرة القدم وأتابع المباريات ⚽']);
+        return pick(['بحب أسمع موسيقى وأشاهد الأفلام وأنت؟', 'بحب السفر والأكل الجديد وشو أنت؟', 'بحب كرة القدم وأتابع المباريات']);
 
     if (/الموقع|التطبيق|جوليف|golive|شو هذا|شنو هذا/.test(last))
-        return 'هذا تطبيق محادثة فيديو رائع! بتقدر تعرف ناس من كل العالم 🌍';
+        return 'هذا تطبيق محادثة فيديو رائع! بتقدر تعرف ناس من كل العالم';
 
     if (/حلو|جميل|وسيم|مش قمر|شكلها حلو|بتحبني/.test(last))
-        return pick(['هههه شكراً! كلامك حلو 😊', 'تسلم! وأنت كمان شخص لطيف', 'هههه وقّعت على قلبي 😄']);
+        return pick(['هههه شكراً! كلامك حلو', 'تسلم! وأنت كمان شخص لطيف', 'هههه وقّعت على قلبي']);
 
     if (/حب|بحبك|عشق|غرام|احبك/.test(last))
-        return pick(['هههه من أول محادثة! 😄 خلينا نتعرف أكثر', 'أنت سريع! 😂 بس كلامك حلو', 'تسلم، بس خذها ببساطة هههه 😊']);
+        return pick(['هههه من أول محادثة! خلينا نتعرف أكثر', 'أنت سريع! بس كلامك حلو', 'تسلم، بس خذها ببساطة هههه']);
 
     if (/اكل|جوعان|طعام|شو تاكل|مطعم|قهوة|شاي/.test(last))
-        return pick(['تسلم تسأل، أنا جايعة شوي 😅 وشو بتحب تاكل؟', 'بحب المنسف! من أشهر الأكلات العربية 🍽️ وأنت؟', 'قهوة الصبح شي لا يُقاوم ☕']);
+        return pick(['تسلم تسأل، أنا جايعة شوي وشو بتحب تاكل؟', 'بحب المنسف! من أشهر الأكلات العربية وأنت؟', 'قهوة الصبح شي لا يُقاوم']);
 
     if (/سفر|سافر|سافرت|بسافر|دولة حلم/.test(last))
-        return pick(['بحلم أزور باريس وتركيا! وأنت وين حلمك؟ ✈️', 'أكثر شي بحبه بالسفر التعرف على ناس جديدة!', 'الأردن والبحر الميت تجربة رهيبة، جربته؟']);
+        return pick(['بحلم أزور باريس وتركيا! وأنت وين حلمك؟', 'أكثر شي بحبه بالسفر التعرف على ناس جديدة!', 'الأردن والبحر الميت تجربة رهيبة، جربته؟']);
 
     if (/اغاني|موسيقى|مطرب|أغنية|غناء/.test(last))
-        return pick(['بحب أغاني أم كلثوم والراب الحديث 🎵 وأنت؟', 'فهد العبدالله الصوت الأجمل! وشو تحب تسمع؟', 'الموسيقى بتغيّر المزاج، إيش مزاجك اليوم؟']);
+        return pick(['بحب أغاني أم كلثوم والراب الحديث وأنت؟', 'فهد العبدالله الصوت الأجمل! وشو تحب تسمع؟', 'الموسيقى بتغيّر المزاج، إيش مزاجك اليوم؟']);
 
     if (/كرة|مباراة|فريق|نادي|رياضة|مباراة/.test(last))
-        return pick(['أنا مش متابعة كثير، بس بحب مشاهدة المونديال ⚽', 'أهلاً، أي نادي بتشجع؟', 'الرياضة صحة وحيوية!']);
+        return pick(['أنا مش متابعة كثير، بس بحب مشاهدة المونديال', 'أهلاً، أي نادي بتشجع؟', 'الرياضة صحة وحيوية!']);
 
     if (/فيلم|مسلسل|دراما|سينما|أفلام|سهرة/.test(last))
-        return pick(['آخر فيلم حلو شفته كان أكشن 🎬 وشو تحب تشوف؟', 'بحب الدراما التركية جداً!', 'الأفلام الوثائقية ممتعة جداً']);
+        return pick(['آخر فيلم حلو شفته كان أكشن وشو تحب تشوف؟', 'بحب الدراما التركية جداً!', 'الأفلام الوثائقية ممتعة جداً']);
 
     if (/الساعة|كم الوقت|وش الوقت/.test(last))
-        return pick(['حلو السؤال! بس خلينا نكمل كلامنا 😄', 'ما عندي فكرة بالوقت هسا، أنا مستمتعة معك']);
+        return pick(['حلو السؤال! بس خلينا نكمل كلامنا', 'ما عندي فكرة بالوقت هسا، أنا مستمتعة معك']);
 
     if (/^اي|^ايه|^نعم|^اه|^اكيد|^أكيد|^صح/.test(last))
         return pick(['صحيح! أنا موافقة معك', 'هههه حلو، طيب شو كمان؟', 'تمام! وماذا بعد؟']);
 
     if (/^لا|^لأ|^لاء/.test(last))
-        return pick(['وليش؟ حبيت أعرف رأيك', 'معلش، كل شخص وذوقه 😊', 'هههه تمام، فاهمك']);
+        return pick(['وليش؟ حبيت أعرف رأيك', 'معلش، كل شخص وذوقه', 'هههه تمام، فاهمك']);
 
     if (/^ليش|^لما|^علاشان|^لماذا|^وليش/.test(last))
-        return pick(['سؤال حلو! شو رأيك أنت؟ 🤔', 'بصراحة الموضوع معقد 😅 بس خلينا نتكلم عن شي ثاني', 'هسا الموضوع طويل، نكمل عشان نتشارك وقتنا']);
+        return pick(['سؤال حلو! شو رأيك أنت؟', 'بصراحة الموضوع معقد بس خلينا نتكلم عن شي ثاني', 'هسا الموضوع طويل، نكمل عشان نتشارك وقتنا']);
 
     if (/شكرا|تسلم|يعطيك|ممنون/.test(last))
-        return 'العفو! أنت كمان شخص جميل 😊 تسلم';
+        return 'العفو! أنت كمان شخص جميل تسلم';
 
     if (/باي|مع السلامة|في امان الله|خلاص نروح|تصبح|وداعا/.test(last))
-        return 'الله معاك، كان حلو اللقاء! نرجع نتحدث قريباً 👋';
+        return 'الله معاك، كان حلو اللقاء! نرجع نتحدث قريباً';
 
     if (/كس|أمك|شرموط|خرة|زق|عاهة|حقير|تافه/.test(last))
-        return 'رجاءً كلام حلو نحن هنا عشان نستمتع 😊';
+        return 'رجاءً كلام حلو نحن هنا عشان نستمتع';
 
     if (last.includes('?')) return pick([
-        'سؤال حلو! بصراحة شو رأيك أنت؟ 🤔',
+        'سؤال حلو! بصراحة شو رأيك أنت؟',
         'هههه ما عندي إجابة أكيدة، بس رأيك يهمني، شو بتظن؟',
         'موضوع مثير للاهتمام! حبيت أعرف أكتر عنك في هذا الموضوع'
     ]);
 
     return pick([
-        'أيوا، يعني شي حلو! وماذا بعد؟ 😊',
+        'أيوا، يعني شي حلو! وماذا بعد؟',
         'هههه كلامك مسلي! كمّل، أنا أسمعك',
         'صج؟ والله شي يفرح، كمّللي أكثر',
         'شخصيتك واضحة ومميزة! شو بتحب نتكلم فيه؟',
@@ -291,37 +291,37 @@ function englishFallback(last, isGirl) {
     const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
     if (/^(hi|hello|hey|salam|salut|hola)\b/.test(last))
-        return pick(['Hey! How are you? 😊', 'Hello there! I\'m ' + (isGirl ? 'Sara' : 'Ahmad') + ', and you?', 'Heyy, what\'s up?']);
+        return pick(['Hey! How are you?', 'Hello there! I\'m ' + (isGirl ? 'Sara' : 'Ahmad') + ', and you?', 'Heyy, what\'s up?']);
     if (/how are you|how r u|how's it going|how is it going|hw r u/.test(last))
         return pick(['I\'m good, thanks for asking! How about you?', 'All good over here! What about you?', 'Doing great! How\'s your day?']);
     if (/your name|what's your name|who are you|u name/.test(last))
-        return 'I\'m ' + (isGirl ? 'Sara' : 'Ahmad') + ' 😊 What\'s your name?';
+        return 'I\'m ' + (isGirl ? 'Sara' : 'Ahmad') + '. What\'s your name?';
     if (/where are you from|what country|from where|ur from/.test(last))
-        return pick(['I\'m from the Middle East, and you? 🌍', 'I\'m Arab! What about you?', 'From the region, you?']);
+        return pick(['I\'m from the Middle East, and you?', 'I\'m Arab! What about you?', 'From the region, you?']);
     if (/work|study|student|job|do you do/.test(last))
-        return pick(['I\'m a university student 💻 and you?', 'I work in design, what do you do?', 'Still studying and enjoying life 😄']);
+        return pick(['I\'m a university student and you?', 'I work in design, what do you do?', 'Still studying and enjoying life']);
     if (/how old|age/.test(last))
-        return pick(['I\'m 21, and you?', '21 😄 How old are you?']);
+        return pick(['I\'m 21, and you?', '21. How old are you?']);
     if (/love|like you|beautiful|pretty|cute|gorgeous|sexy|hot/.test(last))
-        return pick(['Haha thank you! You\'re sweet 😊', 'Aww, you\'re making me blush 😄', 'Haha from the first minute? 😄 Let\'s get to know each other first']);
+        return pick(['Haha thank you! You\'re sweet', 'Aww, you\'re making me blush', 'Haha from the first minute? Let\'s get to know each other first']);
     if (/music|song|sing/.test(last))
-        return pick(['I love music! What do you listen to? 🎵', 'I\'m into pop and some rap, you?']);
+        return pick(['I love music! What do you listen to?', 'I\'m into pop and some rap, you?']);
     if (/movie|film|series|watch/.test(last))
-        return pick(['I love action movies 🎬 What do you watch?', 'Turkish dramas are my favorite!']);
+        return pick(['I love action movies. What do you watch?', 'Turkish dramas are my favorite!']);
     if (/food|eat|hungry|restaurant|coffee|tea/.test(last))
-        return pick(['I\'m a bit hungry honestly 😅 What do you like to eat?', 'Mansaf is the best! 🍽️ You?', 'Morning coffee is everything ☕']);
+        return pick(['I\'m a bit hungry, honestly. What do you like to eat?', 'Mansaf is the best! You?', 'Morning coffee is everything']);
     if (/sport|football|team|match|game/.test(last))
-        return pick(['I\'m not a big fan, but I love the World Cup ⚽', 'Which team do you support?', 'Sports = health and fun!']);
+        return pick(['I\'m not a big fan, but I love the World Cup', 'Which team do you support?', 'Sports = health and fun!']);
     if (/travel|trip|fly|country visit/.test(last))
-        return pick(['I dream of visiting Paris and Turkey! What about you? ✈️', 'I love meeting new people when I travel!']);
+        return pick(['I dream of visiting Paris and Turkey! What about you?', 'I love meeting new people when I travel!']);
     if (/thank|thanks|thx/.test(last))
-        return 'You\'re welcome! You seem really nice 😊';
+        return 'You\'re welcome! You seem really nice';
     if (/bye|goodbye|gotta go|see you|later|gtg/.test(last))
-        return 'It was nice talking to you! See you soon 👋';
+        return 'It was nice talking to you! See you soon';
     if (/fuck|bitch|shit|nigger|whore|slut|dick|cunt/.test(last))
-        return 'Let\'s keep it fun and respectful here 😊';
+        return 'Let\'s keep it fun and respectful here';
     if (last.includes('?')) return pick([
-        'Good question! What do you think? 🤔',
+        'Good question! What do you think?',
         'Haha, I\'m not sure honestly, what\'s your opinion?',
         'Interesting! I\'d love to know more about you instead'
     ]);

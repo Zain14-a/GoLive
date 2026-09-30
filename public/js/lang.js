@@ -132,11 +132,17 @@ const Lang = (() => {
         return true;
     }
 
+    function langLabel(code) {
+        const l = LANG_DATA[code];
+        if (!l) return '';
+        return `<span class="lang-code">${code.toUpperCase()}</span><span class="lang-label">${l.label || ''}</span>`;
+    }
+
     function createLangSelector(container) {
         const current = getCurrent();
         const btn = document.createElement('div');
         btn.className = 'lang-selector';
-        btn.innerHTML = `<button class="lang-btn" id="langToggle">${LANG_DATA[current]?.flag || ''} ${LANG_DATA[current]?.label || ''}</button>`;
+        btn.innerHTML = `<button class="lang-btn" id="langToggle">${langLabel(current)}</button>`;
 
         const dropdown = document.createElement('div');
         dropdown.className = 'lang-dropdown';
@@ -147,13 +153,13 @@ const Lang = (() => {
             const l = LANG_DATA[code];
             const item = document.createElement('div');
             item.className = 'lang-item' + (code === current ? ' active' : '');
-            item.innerHTML = `${l.flag} ${l.label}`;
+            item.innerHTML = langLabel(code);
             item.addEventListener('click', () => {
                 set(code);
                 document.querySelectorAll('.lang-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 dropdown.style.display = 'none';
-                btn.querySelector('#langToggle').innerHTML = `${l.flag} ${l.label}`;
+                btn.querySelector('#langToggle').innerHTML = langLabel(code);
 
                 syncSettingsUi();
 
@@ -190,7 +196,7 @@ const Lang = (() => {
             const l = LANG_DATA[code];
             const opt = document.createElement('div');
             opt.className = 'settings-lang-opt' + (code === getCurrent() ? ' active' : '');
-            opt.innerHTML = `${l.flag} ${l.label}`;
+            opt.innerHTML = langLabel(code);
             opt.addEventListener('click', (e) => {
                 e.stopPropagation();
                 set(code);
@@ -215,22 +221,17 @@ const Lang = (() => {
 
     function syncSettingsUi() {
         const currentEl = document.getElementById('settingsLangCurrent');
-        if (currentEl) {
-            const l = LANG_DATA[getCurrent()];
-            currentEl.textContent = `${l.flag} ${l.label}`;
-        }
+        const currentCode = getCurrent();
+        if (currentEl) currentEl.innerHTML = langLabel(currentCode);
         document.querySelectorAll('.settings-lang-opt').forEach(o => {
-            o.classList.toggle('active', o.textContent.includes(LANG_DATA[getCurrent()]?.label));
+            o.classList.toggle('active', o.textContent.includes(LANG_DATA[currentCode]?.label));
         });
     }
 
     function syncSelectorButtons() {
         document.querySelectorAll('.lang-selector').forEach(sel => {
             const btn = sel.querySelector('.lang-btn');
-            if (btn) {
-                const l = LANG_DATA[getCurrent()];
-                btn.innerHTML = `${l.flag} ${l.label}`;
-            }
+            if (btn) btn.innerHTML = langLabel(getCurrent());
         });
     }
 

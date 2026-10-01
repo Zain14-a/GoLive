@@ -383,9 +383,8 @@ io.on('connection', (socket) => {
                                 (candidateUser.prefGender === 'any' || candidateUser.prefGender === user.gender);
             const countryMatch = (user.country === 'any' || user.country === candidateUser.country) &&
                                  (candidateUser.country === 'any' || candidateUser.country === user.country);
-            const sameClient = user.clientId && candidateUser.clientId && user.clientId === candidateUser.clientId;
 
-            if (genderMatch && countryMatch && !sameClient) {
+            if (genderMatch && countryMatch) {
                 matchIdx = i;
                 break;
             }
